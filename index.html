@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Keycard Desktop</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/app.css">
+</head>
+
+<body class="keycard__body-container">
+  <div class="keycard__main-container group" id="main-container">
+    <div class="keycard__card-info-container group">
+      <div class="keycard__card-info">
+        <p class="keycard__card-info-container-message" id="app-info-header">No card paired</p>
+        <ul class="keycard__app-info-container">
+          <li class="keycard__card-info-container-element" id="instance-uid"></li>
+          <li class="keycard__card-info-container-element" id="app-version"></li>
+          <li class="keycard__card-info-container-element" id="pairing-slots"></li>
+          <li class="keycard__card-info-container-element" id="key-uid"></li>
+        </ul>
+      </div>
+      <div class="keycard__card-messages" id="keycard-log-container"></div>
+    </div>
+    <div class="keycard__content-container group">
+      <ul class="keycard__commands-list group">
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-change-pin" class="keycard__commands-list-el-link">Change PIN</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-change-puk" class="keycard__commands-list-el-link">Change PUK</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-change-pairing-pass" class="keycard__commands-list-el-link">Change Pairing Password</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-unpair" class="keycard__commands-list-el-link">Unpair</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-unpair-oth" class="keycard__commands-list-el-link">Unpair Others</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-change-key" class="keycard__commands-list-el-link">Change Key</a></li>
+        <li class="keycard__commands-list-el"><a href="#" id="keycard-remove-key" class="keycard__commands-list-el-link">Remove Key</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="initialization-container" class="keycard__card-info-container-hidden">
+    <div class="keycard__img-card-container">
+      <img src="./img/smartcard.png" alt="Smartcard" class="keycard__img">
+    </div>
+    <p class="keycard__pairing-message">The card has not been initialized yet. Choose your PIN to initialize the card.</p>
+    <div class="keycard__pairing-input-container">
+      <div class="keycard__pairing-input-field group">
+        <label for="pin" class="keycard__pairing-input-label">PIN</label>
+        <input type="password" id="pin" class="keycard__pairing-input" name="pin" required size="6" minlength="6" maxlength="6" placeholder="******" pattern= "[0-9]">
+      </div>
+      <div class="keycard__pairing-input-field group">
+        <label for="repeat-pin" class="keycard__pairing-input-label">Repeat PIN</label>
+        <input type="password" id="repeat-pin" class="keycard__pairing-input" name="repeat-pin" required size="6" minlength="6" maxlength="6" placeholder="******" pattern= "[0-9]">
+      </div>
+      <div class="keycard__btn-container">
+        <input type="submit" id="initialize-btn" class="keycard__btn" value="Initialize" disabled="disabled">
+      </div>
+    </div>
+  </div>
+  <div id="keycard-init-data" class="keycard__card-info-container-hidden">
+    <div class="keycard__img-card-container" id="keycard-init-data-img-container"></div>
+  </div>
+</body>
+<script>
+  require('./out/renderer.js');
+</script>
+
+</html>

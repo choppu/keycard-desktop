@@ -1,0 +1,267 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  font-size: 62.5%;
+  font-size: 1em;
+  color: rgb(55, 55, 55);
+  line-height: 1.3em;
+  font-family: 'Cutive Mono', monospace;
+  font-weight: 300;
+  background: rgb(15, 17, 22);
+  overflow-y: hidden;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+a {
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+input[disabled="disabled"], input[disabled="disabled"]:hover {
+  opacity: 0.7;
+}
+
+.group:before, .group:after {
+  content: " ";
+  display: table;
+}
+.group:after {
+  clear: both;
+}
+.group {
+  zoom: 1;
+}
+
+.keycard__main-container {
+  background: rgb(15, 17, 22);
+  width: 100%;
+  height: 100%;
+  color: white;
+  height: 100%;
+}
+
+.keycard__card-info-container-message {
+  text-align: center;
+  padding: 5em 1em;
+}
+
+.keycard__app-info-header {
+  border-bottom: 1px solid white;
+}
+
+.keycard__card-messages {
+  padding: 1em .8em;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: .85em;
+  color:rgb(11, 194, 139);
+  overflow: auto;
+  max-height: 60vh;
+}
+
+.keycard__card-info  {
+  box-sizing: border-box;
+  font-size: .9em;
+  height: 30vh;
+  overflow: hidden;
+  background: rgb(15, 17, 22);
+  box-sizing: border-box;
+  padding: 1em;
+}
+
+.keycard__card-info-container-element {
+  display: block;
+  padding: .6em 0;
+}
+
+.keycard__card-info-container {
+  float: right;
+  width: 55%;
+  box-sizing: border-box;
+  background: rgb(25, 27, 32);
+  height: 100%;
+  overflow: hidden; 
+  display: inherit;
+}
+
+.keycard__commands-list {
+  float: left;
+  width: 45%;
+  margin: 0 auto;
+  padding: 3em 0 2em 0;
+  box-sizing: border-box;
+  background: rgb(60, 77, 75);
+  height: 100vh;
+}
+
+.keycard__commands-list-el {
+  width: 80%;
+  margin: 1.5em auto;
+  background: rgb(72, 151, 127);
+  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  padding: .8em 0 1.3em 0;
+  box-sizing: border-box;
+  display: block;
+  text-align: center;
+}
+
+.keycard__commands-list-el-link {
+  display: inline;
+  box-sizing: border-box;
+  border-bottom: 1px solid white;
+  padding-bottom: .5em;
+}
+
+.keycard__card-info-container-hidden {
+  display: none;
+}
+
+.keycard__pairing-container {
+  color: white;
+  text-align: center;
+}
+
+.keycard__img-card-container {
+  width: 20%;
+  box-sizing: border-box;
+  margin: 4em auto;
+}
+
+.keycard__img {
+  width: 100%;
+  display: block;
+}
+
+.keycard__pairing-message {
+  font-size: 1.5em;
+  line-height: 2em;
+  font-style: bold;
+  font-family: 'Inconsolata', monospace;
+  padding: 0 1em;
+  color: white;
+}
+
+.keycard__pairing-input-container {
+  text-align: left;
+  width: 60%;
+  box-sizing: border-box;
+  margin: 3em auto;
+}
+
+.keycard__pairing-input-field {
+  display: block;
+}
+
+.keycard__pairing-input-label {
+  float: left;
+  width: 50%;
+  padding: 1em 0;
+  font-size: 1.4em;
+}
+
+.keycard__pairing-input {
+  background: none;
+  border: none;
+  border-bottom: 1px solid white;
+  box-shadow: none;
+  color: white;
+  float: right;
+  width: 45%;
+  outline: none;
+  padding: .3em .5em;
+  box-sizing: border-box;
+  font-size: 1.4em;
+  font-family: 'Cutive Mono', monospace;
+  text-align: center;
+}
+
+.keycard__btn-container {
+  text-align: center;
+  padding: 3em 0 0 0;
+}
+
+.keycard__btn {
+  background: rgb(72, 151, 127);
+  padding: 1em 2em;
+  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: none;
+  color: white;
+  display: inline-block;
+  font-family: 'Cutive Mono', monospace;
+  font-size: 1.1em;
+  outline: none;
+}
+
+.keycard__init-info-container {
+  margin: 1em auto;
+  text-align: center;
+}
+
+.keycard__init-data-container {
+  width: 60%;
+  margin: 2em auto;
+  font-size: 1.4em;
+  color: white;
+  text-align: left;
+}
+
+.keycard__init-data {
+  display: block;
+  padding: .8em 0;
+}
+
+.keycard__init-info-label, .keycard__app-info-label {
+  color: rgb(60, 77, 75);
+}
+
+.keycard__app-info-header {
+  text-align: left;
+}
+
+.app-info-header {
+  padding: 1em 0;
+  text-align: left;
+}

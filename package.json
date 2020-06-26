@@ -1,0 +1,24 @@
+{
+  "name": "keycard-desktop",
+  "version": "1.0.0",
+  "description": "Keycard Management Application",
+  "main": "./out/app.js",
+  "scripts": {
+    "rebuild": "electron-rebuild",
+    "build": "tsc",
+    "start": "npm run build && electron ./out/app.js"
+  },
+  "author": "Ksenia Balistreri",
+  "license": "ISC",
+  "dependencies": {
+    "@pokusew/pcsclite": "^0.6.0",
+    "crypto-random-string": "^3.2.0",
+    "electron": "^9.0.4",
+    "electron-store": "^5.2.0",
+    "keycard-sdk": "git+https://github.com/choppu/keycard-sdk.git",
+    "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.11.0"
+  }
+}
