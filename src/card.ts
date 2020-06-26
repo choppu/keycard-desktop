@@ -33,7 +33,7 @@ export namespace Card {
       await cmdSet.autoPair(data.pairingPassword);
       (await cmdSet.select()).checkOK();
       savePairing(cmdSet.applicationInfo.instanceUID, cmdSet.getPairing().toBase64());
-      event.reply("card-initialization", true, data);
+      event.reply("card-initialization", data);
       let appData = new ShortApplicationInfo(cmdSet.applicationInfo);
       window.send("paired", true, appData, "Paired");
     });
