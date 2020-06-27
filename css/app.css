@@ -85,7 +85,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__card-info-container-message {
   text-align: center;
-  padding: 5em 1em;
+  padding: 6em 1em;
 }
 
 .keycard__app-info-header {
@@ -99,13 +99,13 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   font-size: .9em;
   color:rgb(11, 194, 139);
   overflow: auto;
-  max-height: 55vh;
+  max-height: 45vh;
 }
 
 .keycard__card-info  {
   box-sizing: border-box;
   font-size: 1em;
-  height: 35vh;
+  height: 45vh;
   overflow: hidden;
   background: rgb(15, 17, 22);
   box-sizing: border-box;
@@ -154,6 +154,12 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   box-sizing: border-box;
   border-bottom: 1px solid white;
   padding-bottom: .5em;
+}
+
+.keycard__command-disabled {
+  background: rgba(72, 151, 127, .5);
+  cursor: pointer;
+  pointer-events: none;
 }
 
 .keycard__card-info-container-hidden {
