@@ -59,7 +59,7 @@ export namespace Card {
     }
   }
   
-  export async function initializeCard(cmdSet: Commandset, window: WebContents): Promise<void> {
+  export function initializeCard(cmdSet: Commandset, window: WebContents): Promise<void> {
     return new Promise((resolve, reject) => {
       window.send('card-need-initialization');
       ipcMain.on('initialization-data-submitted', async (event, data: InitializationData) => {
@@ -75,7 +75,7 @@ export namespace Card {
     })
   }
   
-  export async function pairCard(cmdSet: Commandset, window: WebContents) : Promise<void> {
+  export function pairCard(cmdSet: Commandset, window: WebContents) : Promise<void> {
     return new Promise((resolve, reject) => {
       let pairingInfo: string;
       let instanceUID = cmdSet.applicationInfo.instanceUID;
