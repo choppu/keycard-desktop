@@ -5,11 +5,9 @@ export namespace Pair {
   export function pair(): void {
     let pairingField = document.getElementById("pairing") as HTMLInputElement;
     let button = document.getElementById("pair-btn");
-    let pairing: string;
 
     button!.addEventListener("click", function (e) {
-      pairing = pairingField.value;
-      ipcRenderer.send("pairing-pass-submitted", pairing);
+      ipcRenderer.send("pairing-pass-submitted", pairingField.value);
       UI.unloadFragment();
       e.preventDefault();
     });

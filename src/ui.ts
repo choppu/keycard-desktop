@@ -25,7 +25,7 @@ export namespace UI {
     header!.innerHTML = "Application Info";
     header!.classList.add("keycard__app-info-header");
     header!.classList.remove("keycard__card-info-container-message");
-    document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID:</span> 0x${appInfo.instanceUID}`;
+    document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID:</span> ${appInfo.instanceUID}`;
     document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version:</span> ${appInfo.appVersion}`;
     document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots:</span> ${appInfo.pairingSlots}`;
 

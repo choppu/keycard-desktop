@@ -41,7 +41,11 @@ export namespace Card {
         if (cmdSet.applicationInfo.initializedCard == false) {
           await initializeCard(cmdSet, window);
         } else {
-          await pairCard(cmdSet, window);
+          try {
+            await pairCard(cmdSet, window);
+          } catch(err) {
+            continue;
+          }
         }
         
         try {
@@ -62,7 +66,7 @@ export namespace Card {
   export function initializeCard(cmdSet: Commandset, window: WebContents): Promise<void> {
     return new Promise((resolve, reject) => {
       window.send('card-need-initialization');
-      ipcMain.on('initialization-data-submitted', async (event, data: InitializationData) => {
+      ipcMain.once('initialization-data-submitted', async (event, data: InitializationData) => {
         (await cmdSet.init(data.pin, data.puk, data.pairingPassword)).checkOK();
         (await cmdSet.select()).checkOK();
         await cmdSet.autoPair(data.pairingPassword);
@@ -87,8 +91,13 @@ export namespace Card {
         resolve();
       } else {
         window.send("pairing-needed", "No pairing found");
-        ipcMain.on("pairing-pass-submitted", async (_, pairingPassword: string) => {
-          await cmdSet.autoPair(pairingPassword);
+        ipcMain.once("pairing-pass-submitted", async (_, pairingPassword: string) => {
+          try {
+            await cmdSet.autoPair(pairingPassword);
+          } catch {
+            reject("Error: invalid password");
+            return;
+          }
           (await cmdSet.select()).checkOK();
           savePairing(cmdSet.applicationInfo.instanceUID, cmdSet.getPairing().toBase64());
           window.send("paired", "Paired successfully");
