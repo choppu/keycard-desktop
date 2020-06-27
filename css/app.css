@@ -93,23 +93,24 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 }
 
 .keycard__card-messages {
-  padding: 1em .8em;
+  padding: 1.5em;
   box-sizing: border-box;
   text-align: left;
-  font-size: .85em;
+  font-size: .9em;
   color:rgb(11, 194, 139);
   overflow: auto;
-  max-height: 60vh;
+  max-height: 55vh;
 }
 
 .keycard__card-info  {
   box-sizing: border-box;
-  font-size: .9em;
-  height: 30vh;
+  font-size: 1em;
+  height: 35vh;
   overflow: hidden;
   background: rgb(15, 17, 22);
   box-sizing: border-box;
-  padding: 1em;
+  padding: 1.5em;
+  font-family: 'Inconsolata', monospace;
 }
 
 .keycard__card-info-container-element {
@@ -131,7 +132,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   float: left;
   width: 45%;
   margin: 0 auto;
-  padding: 3em 0 2em 0;
+  padding: 2.5em 0 1em 0;
   box-sizing: border-box;
   background: rgb(60, 77, 75);
   height: 100vh;
@@ -259,6 +260,9 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__app-info-header {
   text-align: left;
+  display: inline-block;
+  padding-bottom: .3em;
+  margin-bottom: 1em;
 }
 
 .app-info-header {

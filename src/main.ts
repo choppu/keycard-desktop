@@ -15,7 +15,7 @@ export namespace Main {
 
   export function onReady(): void {
     mainWindow = new BrowserWindow({
-      width: 900, height: 750, minWidth: 900, minHeight: 750, maxHeight: 750, maxWidth: 1200, maximizable: false, webPreferences: {
+      width: 1200, height: 750, minWidth: 1200, minHeight: 750, maxHeight: 750, maxWidth: 1200, maximizable: false, webPreferences: {
         nodeIntegration: true
       }
     });

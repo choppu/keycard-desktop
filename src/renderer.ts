@@ -1,6 +1,6 @@
-import { Pairing } from "keycard-sdk/dist/pairing"
 import { UI } from "./ui";
 import { CardInit } from "./card-init";
+import { Pair } from "./pair";
 
 const { ipcRenderer } = require('electron');
 
@@ -15,14 +15,16 @@ ipcRenderer.on("card-disconnected", function (_, mess) {
   UI.addMessageToLog(mess);
 });
 
-ipcRenderer.on('card-need-initialization', (_, needInit) => {
-  if (needInit) {
-    UI.loadFragment('initialization.html', CardInit.initializeCard);
-  }
+ipcRenderer.on('card-need-initialization', (_) => {
+  UI.loadFragment('initialization.html', CardInit.initializeCard);
 });
 
-ipcRenderer.on("paired", (_, pairingSuccess, appInfo, mess) => {
+ipcRenderer.on("pairing-needed", (_, mess) => {
   UI.addMessageToLog(mess);
+  UI.loadFragment('pairing.html', Pair.pair);
+})
+
+ipcRenderer.on("application-info", function (_, appInfo) {
   UI.renderAppInfo(appInfo);
 });
 
@@ -33,7 +35,6 @@ ipcRenderer.on("card-exceptions", function (_, err) {
 updateLogMessage('card-detected');
 updateLogMessage('card-removed');
 updateLogMessage('card-connected');
-updateLogMessage('card-disconnected');
-
-
-
+updateLogMessage('pairing-found');
+updateLogMessage('secure-channel');
+updateLogMessage('paired');
