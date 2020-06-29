@@ -1,0 +1,19 @@
+<section id="keycard__verify-puk-layout">
+  <div class="keycard__img-card-container">
+    <img src="./img/smartcard.png" alt="Smartcard" class="keycard__img">
+  </div>
+  <p class="keycard__pairing-message">Too many invalid PIN attempts. Your PIN retry count is 0. Please insert your PUK.</p>
+  <div class="keycard__pairing-input-container">
+    <div class="keycard__pairing-input-field group">
+      <label for="verify-pin" class="keycard__pairing-input-label">PUK</label>
+      <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="12" minlength="12" maxlength="12" required placeholder="************">
+    </div>
+    <div class="keycard__btn-container">
+      <input type="submit" id="verify-pin-btn" class="keycard__btn" value="Verify PUK">
+      <input type="button" id="verify-pin-cancel" class="keycard__btn" value="Cancel">
+    </div>
+    <div class="keycard__error-message-container">
+      <p id="verify-puk-err" class="keycard__error-message"></p>
+    </div>
+  </div>
+</section>

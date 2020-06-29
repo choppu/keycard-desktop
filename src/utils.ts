@@ -12,4 +12,12 @@ export namespace Utils {
     let pairingPassword = cryptoRandomString({ length: 8, type: 'url-safe' });
     return new InitializationData(pin, puk, pairingPassword);
   }
+
+  export function checkInputNumericValue(value: string, len: number) : boolean {
+    if(value.length == len) {
+      return value.split("").every((c) => '0123456789'.includes(c));
+    }
+
+    return false;
+  }
 }

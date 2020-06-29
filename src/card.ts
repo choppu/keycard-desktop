@@ -7,6 +7,7 @@ import { Utils } from "./utils";
 import { Pairing } from "keycard-sdk/dist/pairing";
 import { Commandset } from "keycard-sdk/dist/commandset";
 import { ApplicationStatus } from "keycard-sdk/dist/application-status";
+import { APDUException, WrongPINException } from "keycard-sdk/dist/apdu-exception";
 
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
@@ -113,39 +114,73 @@ export namespace Card {
     let status = new Keycard.ApplicationStatus((await cmdSet.getStatus(Keycard.Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
 
     return new Promise((resolve, reject) => {
-      ipcMain.once("verify-pin", (_, pin: string) => {
+      ipcMain.on("verify-pin", (_, pin: string) => {
         verifyPin(cmdSet, status, window, pin);
         resolve();
       });
 
-      ipcMain.once("change-pin", (_, pin) => {
+      ipcMain.on("verify-puk", (_, puk: string) => {
+        verifyPin(cmdSet, status, window, puk);
+        resolve();
+      });
+
+      ipcMain.on("change-pin", (_, pin) => {
         changePin(cmdSet, status, window, pin);
         resolve();
       });
 
-      ipcMain.once("change-puk", (_, puk) => {
+      ipcMain.on("change-puk", (_, puk) => {
         changePuk(cmdSet, status, window, puk);
         resolve();
       });
 
-      ipcMain.once("change-pairing-password", (_, pairingPassword) => {
+      ipcMain.on("change-pairing-password", (_, pairingPassword) => {
         changePairingPassword(cmdSet, status, window, pairingPassword);
         resolve();
       });
 
-      ipcMain.once("unpair", async (_, pin) => {
-        
+      ipcMain.on("unpair", async (_) => {
+        unpair(cmdSet, status, window);
         resolve();
       });
 
-      ipcMain.once("unpair-others", async (_) => {
-        await cmdSet.unpairOthers();
+      ipcMain.on("unpair-others", async (_) => {
+        unpairOthers(cmdSet, status, window);
+        resolve();
+      });
+
+      ipcMain.on("create-mnemonic", async (_) => {
+        createMnemonic(cmdSet, status, window);
+        resolve();
+      });
+
+      ipcMain.on("create-mnemonic", async (_, mnemonicList) => {
+        loadMnemonic(cmdSet, status, window, mnemonicList);
+        resolve();
+      });
+
+      ipcMain.on("remove-key", async (_) => {
+        removeKey(cmdSet, status, window);
         resolve();
       });
     })   
   }
 
-  export function verifyPin(cmdSet: Commandset, status: ApplicationStatus, window: WebContents, pin: string) : void {
+  export async function verifyPin(cmdSet: Commandset, status: ApplicationStatus, window: WebContents, pin: string) : Promise<void> {
+    try {
+      (await cmdSet.verifyPIN(pin)).checkAuthOK();
+      window.send("pin-verified", "PIN verified");
+    } catch (err) {
+      if (err instanceof WrongPINException) {
+
+      } else {
+        throw err;   
+      }
+    }
+    
+  }
+
+  export function verifyPuk(cmdSet: Commandset, status: ApplicationStatus, window: WebContents, puk: string) : void {
 
   }
 
@@ -161,16 +196,28 @@ export namespace Card {
 
   }
 
-  export async function unpair(cmdSet: Commandset, pin: string, window: WebContents, status: ApplicationStatus) : Promise<void> {
+  export async function unpair(cmdSet: Commandset, status: ApplicationStatus, window: WebContents) : Promise<void> {
     await cmdSet.autoUnpair();
     window.send('application-info', new ShortApplicationInfo(cmdSet.applicationInfo, status));
     window.send('card-unpaired', "Card unpaired");
   }
 
-  export async function unpairOthers(cmdSet: Commandset, window: WebContents, status: ApplicationStatus) : Promise<void> {
+  export async function unpairOthers(cmdSet: Commandset, status: ApplicationStatus, window: WebContents) : Promise<void> {
     await cmdSet.unpairOthers();
     window.send('application-info', new ShortApplicationInfo(cmdSet.applicationInfo, status));
     window.send('card-unpaired', "Other clients unpaired");
+  }
+
+  export function createMnemonic(cmdSet: Commandset, status: ApplicationStatus, window: WebContents) : void {
+
+  }
+
+  export function loadMnemonic(cmdSet: Commandset, status: ApplicationStatus, window: WebContents, mnemonicList: string[]) : void {
+
+  }
+
+  export function removeKey(cmdSet: Commandset, status: ApplicationStatus, window: WebContents) : void {
+
   }
    
   export function start(window: WebContents): void {

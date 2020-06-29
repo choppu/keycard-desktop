@@ -132,7 +132,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   float: left;
   width: 45%;
   margin: 0 auto;
-  padding: 2.5em 0 1em 0;
+  padding: 1.8em 0 1.5em 0;
   box-sizing: border-box;
   background: rgb(60, 77, 75);
   height: 100vh;

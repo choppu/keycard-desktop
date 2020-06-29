@@ -1,4 +1,7 @@
 import { ShortApplicationInfo } from "./short-app-info";
+import { PIN } from "./pin";
+import { cardInfo } from "./renderer";
+import { PUK } from "./puk";
 
 const fs = require('fs');
 
@@ -38,6 +41,20 @@ export namespace UI {
     }
   }
 
+  export function renderCmdScreenLayout(btn: HTMLElement, layoutPath: string, onLoad: () => void) : void {
+    btn.addEventListener("click", (e) => {
+      loadFragment(layoutPath, onLoad);
+      e.preventDefault();
+    });
+  }
+
+  export function renderVerifyPinLayout(btn: HTMLElement, layoutPin: string, layoutPuk: string, pinFunc: () => void, pukFunc: () => void) : void {
+    btn.addEventListener("click", (e) => {
+      cardInfo.pinRetry > 0 ? loadFragment(layoutPin, pinFunc) : loadFragment(layoutPuk, pukFunc);
+      e.preventDefault();
+    });
+  }
+
   export function loadFragment(filename: string, onLoad: () => void) : void {
     let path = `${__dirname}/../layouts/${filename}`;
     layoutContainer!.innerHTML = "";
@@ -73,5 +90,23 @@ export namespace UI {
       });
     });
   }
+
+  export function enableCmndBtns() {
+    let btns = document.getElementsByClassName("keycard__command-disabled");
+    for(let i = 0; i < btns.length; i++) {
+      
+    }
+  }
+
+  export function renderErrorMess(errMessage: string, messField: HTMLElement) : void {
+    messField.innerHTML = errMessage;
+    setTimeout(() => {
+      messField.innerHTML = "";
+    }, 10000);
+  }
 }
+
+UI.renderVerifyPinLayout(document.getElementById("keycard-verify-pin")!, 'verify-pin.html', 'verify-puk.html', PIN.verifyPIN, PUK.verifyPUK);
+
+
 
