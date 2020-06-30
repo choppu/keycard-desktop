@@ -140,26 +140,31 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__commands-list-el {
   width: 80%;
-  margin: 1.5em auto;
-  background: rgb(72, 151, 127);
-  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  padding: .8em 0 1.3em 0;
-  box-sizing: border-box;
+  margin: 1.4em auto;
   display: block;
   text-align: center;
 }
 
 .keycard__commands-list-el-link {
-  display: inline;
+  width: 100%;
+  display: block;
   box-sizing: border-box;
-  border-bottom: 1px solid white;
-  padding-bottom: .5em;
+  background: rgb(72, 151, 127);
+  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  padding: 1.2em 0;
+  box-sizing: border-box;
+  text-align: center;
+  border: none;
+  color: white;
+  font-family: 'Cutive Mono', monospace;
+  font-size: 1em;
+  outline: none;
+  text-decoration: underline;
+  text-underline-position: under;
 }
 
-.keycard__command-disabled {
-  background: rgba(72, 151, 127, .5);
-  cursor: pointer;
-  pointer-events: none;
+.keycard__commands-list-el-link:disabled {
+  background: rgba(72, 151, 127, .6);
 }
 
 .keycard__card-info-container-hidden {

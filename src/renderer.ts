@@ -1,11 +1,10 @@
 import { UI } from "./ui";
 import { CardInit } from "./card-init";
 import { Pair } from "./pair";
-import { ShortApplicationInfo } from "./short-app-info";
+import { SessionInfo } from "./session-info";
 
 const { ipcRenderer } = require('electron');
-export let cardInfo: ShortApplicationInfo;
-export let pinVerified = false;
+export let cardInfo: SessionInfo;
 
 export function updateLogMessage(event: string): void {
   ipcRenderer.on(event, (_, mess) => {
@@ -13,7 +12,7 @@ export function updateLogMessage(event: string): void {
   });
 }
 
-ipcRenderer.on("card-disconnected", function (_, mess) {
+ipcRenderer.on("card-removed", function (_, mess) {
   UI.unloadFragment();
   UI.addMessageToLog(mess);
 });
@@ -27,25 +26,28 @@ ipcRenderer.on("pairing-needed", (_, mess) => {
   UI.loadFragment('pairing.html', Pair.pair);
 })
 
-ipcRenderer.on("application-info", function (_, appInfo) {
-  cardInfo = appInfo;
-  UI.renderAppInfo(appInfo);
+ipcRenderer.on("application-info", function (_, sessionInfo) {
+  cardInfo = sessionInfo;
+  if(sessionInfo.cardConnected) {
+    UI.renderAppInfo(sessionInfo);
+  } else {
+    UI.renderNoAppInfo();
+  } 
 });
 
 ipcRenderer.on("card-exceptions", function (_, err) {
   UI.loadErrorFragment(err);
 });
 
-ipcRenderer.on("card-verified", (_, mess) => {
-  pinVerified = true;
+ipcRenderer.on("pin-verified", (_, mess) => {
   UI.enableCmndBtns();
   UI.addMessageToLog(mess);
 });
 
 updateLogMessage('card-detected');
-updateLogMessage('card-removed');
 updateLogMessage('card-connected');
 updateLogMessage('pairing-found');
 updateLogMessage('secure-channel');
 updateLogMessage('paired');
+updateLogMessage('pin-wrong');
 

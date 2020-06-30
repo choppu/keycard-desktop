@@ -16,6 +16,7 @@ export namespace PIN {
 
     submitBtn?.addEventListener("click", (e) => {
       ipcRenderer.send("verify-pin", pin.value);
+      UI.unloadFragment();
       e.preventDefault();
     });
 

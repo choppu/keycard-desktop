@@ -1,9 +1,11 @@
 import { Card } from "./card"
+import { ipcMain } from "electron";
 
 export namespace Main {
   let mainWindow: Electron.BrowserWindow;
   let application: Electron.App;
   let BrowserWindow: any;
+  let card: Card;
 
   export function onWindowAllClosed() {
     application.quit();
@@ -21,7 +23,10 @@ export namespace Main {
     });
     mainWindow.loadFile('../index.html');
     mainWindow.webContents.openDevTools();
-    Card.start(mainWindow.webContents);
+    card = new Card(mainWindow.webContents);
+    mainWindow.webContents.once("dom-ready", () => {
+      card.start();
+    });
     mainWindow.on('closed', Main.onClose);
   }
 

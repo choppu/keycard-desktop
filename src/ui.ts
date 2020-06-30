@@ -1,4 +1,4 @@
-import { ShortApplicationInfo } from "./short-app-info";
+import { SessionInfo } from "./session-info";
 import { PIN } from "./pin";
 import { cardInfo } from "./renderer";
 import { PUK } from "./puk";
@@ -23,7 +23,7 @@ export namespace UI {
     }
   }
 
-  export function renderAppInfo(appInfo: ShortApplicationInfo): void {
+  export function renderAppInfo(appInfo: SessionInfo): void {
     let header = document.getElementById("app-info-header");
     header!.innerHTML = "Application Info";
     header!.classList.add("keycard__app-info-header");
@@ -92,9 +92,9 @@ export namespace UI {
   }
 
   export function enableCmndBtns() {
-    let btns = document.getElementsByClassName("keycard__command-disabled");
+    let btns = document.getElementsByClassName("keycard__cmd-disabled");
     for(let i = 0; i < btns.length; i++) {
-      
+      btns[i].removeAttribute("disabled");
     }
   }
 
@@ -103,6 +103,19 @@ export namespace UI {
     setTimeout(() => {
       messField.innerHTML = "";
     }, 10000);
+  }
+
+  export function renderNoAppInfo() : void {
+    let header = document.getElementById("app-info-header");
+    header!.innerHTML = "No card connected";
+    header!.classList.remove("keycard__app-info-header");
+    header!.classList.add("keycard__card-info-container-message");
+    document.getElementById("instance-uid")!.innerHTML = "";
+    document.getElementById("app-version")!.innerHTML = "";
+    document.getElementById("pairing-slots")!.innerHTML = "";
+    document.getElementById("pin-retry")!.innerHTML = "";
+    document.getElementById("puk-retry")!.innerHTML = "";
+    document.getElementById("key-uid")!.innerHTML = "";
   }
 }
 
