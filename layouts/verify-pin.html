@@ -2,11 +2,12 @@
   <div class="keycard__img-card-container">
     <img src="./img/smartcard.png" alt="Smartcard" class="keycard__img">
   </div>
-  <p class="keycard__pairing-message">Please insert your pin.</p>
+  <p class="keycard__pairing-message">Please insert your pin. <span id="pin-retry-form"></span> tries left.</p>
   <div class="keycard__pairing-input-container">
     <div class="keycard__pairing-input-field group">
       <label for="verify-pin" class="keycard__pairing-input-label">PIN</label>
-      <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="6" minlength="6" maxlength="6" required placeholder="******">
+      <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="6" minlength="6"
+        maxlength="6" required placeholder="******">
     </div>
     <div class="keycard__btn-container">
       <input type="submit" id="verify-pin-btn" class="keycard__btn" value="Verify PIN" disabled="disabled">

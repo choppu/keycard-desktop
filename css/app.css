@@ -99,7 +99,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   font-size: .9em;
   color:rgb(11, 194, 139);
   overflow: auto;
-  max-height: 45vh;
+  max-height: 51vh;
 }
 
 .keycard__card-info  {
@@ -232,7 +232,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__btn-container {
   text-align: center;
-  padding: 3em 0 0 0;
+  padding: 1.7em 0 0 0;
 }
 
 .keycard__btn {

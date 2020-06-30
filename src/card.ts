@@ -11,7 +11,8 @@ import { WrongPINException } from "keycard-sdk/dist/apdu-exception";
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
 
-const maxPinRetryCount = 3;
+const maxPINRetryCount = 3;
+const maxPUKRetryCount = 5;
 
 export class Card {
   window: WebContents;
@@ -128,7 +129,7 @@ export class Card {
   async verifyPIN(pin: string) : Promise<void> {
     try {
       (await this.cmdSet!.verifyPIN(pin)).checkAuthOK();
-      this.sessionInfo.pinRetry = maxPinRetryCount;
+      this.sessionInfo.pinRetry = maxPINRetryCount;
       this.window.send('application-info', this.sessionInfo);
       this.window.send("pin-verified", "PIN verified");
       this.sessionInfo.pinVerified = true;
@@ -136,15 +137,37 @@ export class Card {
       if (err.retryAttempts != undefined) {
         this.sessionInfo.pinRetry = err.retryAttempts;
         this.window.send('application-info', this.sessionInfo);
-        this.window.send("pin-wrong", err.message);
+
+        if(err.retryAttempts > 0) {
+          this.window.send("pin-screen-needed");
+        } else {
+          this.window.send("puk-screen-needed");
+          this.window.send("pin-verification-failed", err.message);
+        }
       } else {
         throw err;   
       }
     }
   }
 
-  verifyPUK(puk: string, newPin: string) : void {
-
+  async verifyPUK(puk: string, newPin: string) : Promise<void> {
+    try {
+      (await this.cmdSet!.unblockPIN(puk, newPin)).checkOK();
+      this.sessionInfo.pinRetry = maxPINRetryCount;
+      this.sessionInfo.pukRetry = maxPUKRetryCount;
+      this.window.send('application-info', this.sessionInfo);
+      this.window.send("puk-verified", "PIN unblocked successfully");
+      this.window.send("pin-verified", "PIN verified");
+      this.sessionInfo.pinVerified = true;
+    } catch (err) {
+      this.sessionInfo.pukRetry--;
+      this.window.send('application-info', this.sessionInfo);
+      if(this.sessionInfo.pukRetry > 0) {
+        this.window.send("puk-screen-needed");
+      } else {
+        this.window.send("unblock-pin-failed", "PUK tries exceeded. The card has been blocked. Please re-install the applet.");
+      }
+    }
   }
 
   changePIN(pin: string) : void {

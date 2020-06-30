@@ -9,10 +9,13 @@ export namespace PIN {
     let pin = document.getElementById("verify-pin-inp") as HTMLInputElement;
     let submitBtn = document.getElementById("verify-pin-btn") as HTMLInputElement;
     let cancelBtn = document.getElementById("verify-pin-cancel");
+    let pinRetryMess = document.getElementById("pin-retry-form");
+
+    pinRetryMess!.innerHTML = `${cardInfo.pinRetry}`;
 
     pin.addEventListener("input", (e) => {
       Utils.checkInputNumericValue(pin.value, 6) ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
-    })
+    });
 
     submitBtn?.addEventListener("click", (e) => {
       ipcRenderer.send("verify-pin", pin.value);

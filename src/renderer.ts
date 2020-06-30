@@ -2,6 +2,8 @@ import { UI } from "./ui";
 import { CardInit } from "./card-init";
 import { Pair } from "./pair";
 import { SessionInfo } from "./session-info";
+import { PUK } from "./puk";
+import { PIN } from "./pin";
 
 const { ipcRenderer } = require('electron');
 export let cardInfo: SessionInfo;
@@ -44,10 +46,20 @@ ipcRenderer.on("pin-verified", (_, mess) => {
   UI.addMessageToLog(mess);
 });
 
+ipcRenderer.on("pin-screen-needed", (_) => {
+  UI.loadFragment('verify-pin.html', PIN.verifyPIN);
+});
+
+ipcRenderer.on("puk-screen-needed", (_) => {
+  UI.loadFragment('verify-puk.html', PUK.verifyPUK);
+});
+
 updateLogMessage('card-detected');
 updateLogMessage('card-connected');
 updateLogMessage('pairing-found');
 updateLogMessage('secure-channel');
 updateLogMessage('paired');
-updateLogMessage('pin-wrong');
+updateLogMessage('pin-verification-failed');
+updateLogMessage('puk-verified');
+updateLogMessage('unblock-pin-failed');
 
