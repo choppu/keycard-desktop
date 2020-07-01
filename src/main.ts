@@ -21,7 +21,6 @@ export namespace Main {
       }
     });
     mainWindow.loadFile('../index.html');
-    mainWindow.webContents.openDevTools();
     card = new Card(mainWindow.webContents);
     mainWindow.webContents.once("dom-ready", () => {
       card.start();

@@ -105,7 +105,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 .keycard__card-info  {
   box-sizing: border-box;
   font-size: 1em;
-  height: 45vh;
+  height: 47vh;
   overflow: hidden;
   background: rgb(15, 17, 22);
   box-sizing: border-box;
@@ -285,6 +285,6 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   width: 85%;
   margin: 1em auto;
   text-align: center;
-  font-size: 2em;
+  font-size: 2.1em;
   line-height: 1.8em;
 }

@@ -40,8 +40,9 @@ export namespace UI {
     document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID:</span> ${appInfo.instanceUID}`;
     document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version:</span> ${appInfo.appVersion}`;
     document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots:</span> ${appInfo.pairingSlots}`;
-    document.getElementById("pin-retry")!.innerHTML = `<span class="keycard__app-info-label">Pin retry count:</span> ${appInfo.pinRetry}`;
-    document.getElementById("puk-retry")!.innerHTML = `<span class="keycard__app-info-label">Puk retry count:</span> ${appInfo.pukRetry}`;
+    document.getElementById("pin-retry")!.innerHTML = `<span class="keycard__app-info-label">PIN retry count:</span> ${appInfo.pinRetry}`;
+    document.getElementById("puk-retry")!.innerHTML = `<span class="keycard__app-info-label">PUK retry count:</span> ${appInfo.pukRetry}`;
+    document.getElementById("key-path")!.innerHTML = `<span class="keycard__app-info-label">Key Path:</span> ${appInfo.keyPath}`;
 
     if (appInfo.hasMasterKey) {
       document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID:</span> ${appInfo.keyUID}`;
@@ -138,6 +139,7 @@ export namespace UI {
     document.getElementById("pin-retry")!.innerHTML = "";
     document.getElementById("puk-retry")!.innerHTML = "";
     document.getElementById("key-uid")!.innerHTML = "";
+    document.getElementById("key-path")!.innerHTML = "";
   }
 }
 

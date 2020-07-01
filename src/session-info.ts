@@ -7,6 +7,7 @@ export class  SessionInfo {
   appVersion!: string;
   pairingSlots!: string;
   keyUID!: string;
+  keyPath!: string;
   pinRetry!: number;
   pukRetry!: number
   hasMasterKey!: boolean;
@@ -38,6 +39,7 @@ export class  SessionInfo {
     this.keyUID = "";
     this.pinRetry = 0;
     this.pukRetry = 0;
+    this.keyPath = "";
     this.hasMasterKey = false;
     this.secureChannelOpened = false;
     this.pinVerified = false;

@@ -9,6 +9,7 @@ import { Commandset } from "keycard-sdk/dist/commandset";
 import { WrongPINException } from "keycard-sdk/dist/apdu-exception";
 import { Mnemonic } from "keycard-sdk/dist/mnemonic";
 import { Constants } from "keycard-sdk/dist/constants";
+import { KeyPath } from "keycard-sdk/dist/key-path";
 
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
@@ -49,12 +50,10 @@ export class Card {
     try {
       let channel = new Keycard.PCSCCardChannel(reader, protocol);
       this.cmdSet = new Keycard.Commandset(channel);
-      this.window.send('card-connected', "Selecting Keycard Wallet");
+      this.window.send('card-connected');
       (await this.cmdSet.select()).checkOK();
       
-      let secureChannelOK = false;
-      
-      while(!secureChannelOK) {
+      while(!this.sessionInfo.secureChannelOpened) {
         if (this.cmdSet.applicationInfo.initializedCard == false) {
           await this.initializeCard();
         } else {
@@ -67,18 +66,19 @@ export class Card {
         
         try {
           await this.cmdSet.autoOpenSecureChannel();
-          secureChannelOK = true;
-          this.window.send("secure-channel", "Secure Channel opened");
-          this.window.send("enable-pin-verification");
+          this.window.send("secure-channel");
           this.sessionInfo.secureChannelOpened = true;
         } catch (err) {
           this.deletePairing(this.cmdSet.applicationInfo.instanceUID);
         }
 
         let status = new Keycard.ApplicationStatus((await this.cmdSet.getStatus(Keycard.Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
+        let path = new KeyPath((await this.cmdSet.getStatus(Keycard.Constants.GET_STATUS_P1_KEY_PATH)).checkOK().data);
+        this.sessionInfo.keyPath = path.toString();
         this.sessionInfo.setApplicationInfo(this.cmdSet.applicationInfo);
         this.sessionInfo.setApplicationStatus(status);
         this.window.send('application-info', this.sessionInfo);
+        this.window.send("enable-pin-verification");
       }
     } catch (err) {
       this.window.send("card-exceptions", err);
@@ -95,7 +95,7 @@ export class Card {
         (await this.cmdSet!.select()).checkOK();
         this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
         event.reply("card-initialization", data);
-        this.window.send("paired", "Paired");
+        this.window.send("paired");
         resolve();
       });
     })
@@ -109,10 +109,10 @@ export class Card {
       if(this.isPaired(instanceUID)) {
         pairingInfo = this.loadPairing(instanceUID);
         this.cmdSet!.setPairing(Pairing.fromString(pairingInfo));
-        this.window.send("pairing-found", "Pairing found");
+        this.window.send("pairing-found");
         resolve();
       } else {
-        this.window.send("pairing-needed", "No pairing found");
+        this.window.send("pairing-needed");
         ipcMain.once("pairing-pass-submitted", async (_, pairingPassword: string) => {
           try {
             await this.cmdSet!.autoPair(pairingPassword);
@@ -122,7 +122,7 @@ export class Card {
           }
           (await this.cmdSet!.select()).checkOK();
           this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
-          this.window.send("paired", "Paired successfully");
+          this.window.send("paired");
           resolve();
         });
       }
@@ -134,7 +134,7 @@ export class Card {
       (await this.cmdSet!.verifyPIN(pin)).checkAuthOK();
       this.sessionInfo.pinRetry = maxPINRetryCount;
       this.window.send('application-info', this.sessionInfo);
-      this.window.send("pin-verified", "PIN verified");
+      this.window.send("pin-verified");
       this.sessionInfo.pinVerified = true;
     } catch (err) {
       if (err.retryAttempts != undefined) {
@@ -159,8 +159,8 @@ export class Card {
       this.sessionInfo.pinRetry = maxPINRetryCount;
       this.sessionInfo.pukRetry = maxPUKRetryCount;
       this.window.send('application-info', this.sessionInfo);
-      this.window.send("puk-verified", "PIN unblocked successfully");
-      this.window.send("pin-verified", "PIN verified");
+      this.window.send("puk-verified");
+      this.window.send("pin-verified");
       this.sessionInfo.pinVerified = true;
     } catch (err) {
       this.sessionInfo.pukRetry--;
@@ -168,35 +168,35 @@ export class Card {
       if(this.sessionInfo.pukRetry > 0) {
         this.window.send("puk-screen-needed");
       } else {
-        this.window.send("unblock-pin-failed", "PUK tries exceeded. The card has been blocked. Please re-install the applet.");
+        this.window.send("unblock-pin-failed");
       }
     }
   }
 
   async changePIN(pin: string) : Promise<void> {
     (await this.cmdSet!.changePIN(pin)).checkOK();
-    this.window.send("pin-changed", "PIN updated");
+    this.window.send("pin-changed");
   }
 
   async changePUK(puk: string) : Promise<void> {
     (await this.cmdSet!.changePUK(puk)).checkOK();
-    this.window.send("puk-changed", "PUK updated");
+    this.window.send("puk-changed");
   }
 
   async changePairingPassword(pairingPassword: string) : Promise<void> {
     (await this.cmdSet!.changePairingPassword(pairingPassword)).checkOK();
-    this.window.send("pairing-changed", "Pairing Password updated");
+    this.window.send("pairing-changed");
   }
 
   async unpairCard() : Promise<void> {
     await this.cmdSet!.autoUnpair();
     this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
-    this.window.send('card-unpaired', "Card unpaired");
+    this.window.send('card-unpaired');
   }
 
   async unpairOthers() : Promise<void> {
     await this.cmdSet!.unpairOthers();
-    this.window.send('others-unpaired', "Other clients unpaired");
+    this.window.send('others-unpaired');
   }
 
   async createMnemonic() : Promise<void> {
@@ -207,7 +207,7 @@ export class Card {
     this.sessionInfo.keyUID = Utils.hx(keyUID);
     this.sessionInfo.hasMasterKey = true;
     this.window.send('application-info', this.sessionInfo);
-    this.window.send('mnemonic-created', "Mnemonic created", mnemonicPhrase.toMnemonicPhrase());
+    this.window.send('mnemonic-created', mnemonicPhrase.toMnemonicPhrase());
   }
 
   loadMnemonic(mnemonicList: string[]) : void {
@@ -218,7 +218,7 @@ export class Card {
     await this.cmdSet!.removeKey();
     this.sessionInfo.hasMasterKey = false;
     this.window.send('application-info', this.sessionInfo);
-    this.window.send('key-removed', "Key removed");
+    this.window.send('key-removed');
 
   }
 
@@ -227,10 +227,10 @@ export class Card {
     let card = this;
     
     pcsc.on('reader', (reader: any) => {
-      card.window.send('card-detected', `New reader ${reader.name} detected`);
+      card.window.send('card-detected', reader.name);
       
       reader.on('error', function (err: Error) {
-        card.window.send('card-detected', `Error ${reader.name}: ${err.message}`);
+        card.window.send('card-detected', reader.name, err.message);
       });
       
       reader.on('status', (status: any) => {
@@ -242,10 +242,10 @@ export class Card {
         
         if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
           if (card.sessionInfo.cardConnected) {
-            card.window.send('card-removed', `Card has been removed from ${reader.name}`);
+            card.window.send('card-removed', reader.name);
             card.sessionInfo.reset();
             card.window.send("application-info", card.sessionInfo);
-            card.window.send("diasble-cmds");
+            card.window.send("disable-cmds");
             reader.disconnect(reader.SCARD_LEAVE_CARD, (_: Error) => {});   
           }
           
@@ -253,7 +253,7 @@ export class Card {
           reader.connect({ share_mode: reader.SCARD_SHARE_EXCLUSIVE }, async function (err: Error, protocol: number) {
             card.sessionInfo.cardConnected = true;
             if (err) {
-              card.window.send('card-connected', `Error connecting to the card: ${err.message}`);
+              card.window.send('card-connection-err', err.message);
               return;
             }
             card.connectCard(reader, protocol);
