@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@pokusew/pcsclite": "^0.6.0",
+    "bip39": "^3.0.2",
     "crypto-random-string": "^3.2.0",
     "electron": "^9.0.4",
     "electron-store": "^5.2.0",

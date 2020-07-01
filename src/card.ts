@@ -10,6 +10,7 @@ import { WrongPINException } from "keycard-sdk/dist/apdu-exception";
 import { Mnemonic } from "keycard-sdk/dist/mnemonic";
 import { Constants } from "keycard-sdk/dist/constants";
 import { KeyPath } from "keycard-sdk/dist/key-path";
+import { BIP32KeyPair } from "keycard-sdk/dist/bip32key";
 
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
@@ -206,17 +207,25 @@ export class Card {
     let keyUID = (await this.cmdSet!.loadBIP32KeyPair(mnemonicPhrase.toBIP32KeyPair())).checkOK().data;
     this.sessionInfo.keyUID = Utils.hx(keyUID);
     this.sessionInfo.hasMasterKey = true;
+    this.sessionInfo.keyPath = 'm';
     this.window.send('application-info', this.sessionInfo);
     this.window.send('mnemonic-created', mnemonicPhrase.toMnemonicPhrase());
   }
 
-  loadMnemonic(mnemonicList: string[]) : void {
-
+  async loadMnemonic(mnemonicList: string) : Promise<void>  {
+    let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonicList));
+    let keyUID = (await this.cmdSet!.loadBIP32KeyPair(keyPair)).checkOK().data;
+    this.sessionInfo.keyUID = Utils.hx(keyUID);
+    this.sessionInfo.hasMasterKey = true;
+    this.sessionInfo.keyPath = 'm';
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send('mnemonic-loaded');
   }
 
   async removeKey() : Promise<void> {
     await this.cmdSet!.removeKey();
     this.sessionInfo.hasMasterKey = false;
+    this.sessionInfo.keyPath = 'm';
     this.window.send('application-info', this.sessionInfo);
     this.window.send('key-removed');
 
@@ -272,7 +281,7 @@ export class Card {
     ipcMain.on("unpair", async (_) => this.unpairCard());
     ipcMain.on("unpair-others", async (_) => this.unpairOthers());
     ipcMain.on("create-mnemonic", async (_) => this.createMnemonic());
-    ipcMain.on("create-mnemonic", async (_, mnemonicList) => this.loadMnemonic(mnemonicList));
+    ipcMain.on("load-mnemonic", async (_, mnemonicList) => this.loadMnemonic(mnemonicList));
     ipcMain.on("remove-key", async (_) => this.removeKey()); 
   }
 }

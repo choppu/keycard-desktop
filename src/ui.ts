@@ -142,17 +142,3 @@ export namespace UI {
     document.getElementById("key-path")!.innerHTML = "";
   }
 }
-
-UI.renderVerifyPinLayout(document.getElementById("keycard-verify-pin")!, 'verify-pin.html', 'verify-puk.html', PIN.verifyPIN, PUK.verifyPUK);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-pin")!, 'change-pin.html', PIN.changePIN);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-puk")!, 'change-puk.html', PUK.changePUK);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-pairing-pass")!, 'change-pairing.html', Pair.changePairingPassword);
-UI.renderCmdScreenLayout(document.getElementById("keycard-unpair")!, 'unpair.html', Pair.unpair);
-UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair.html', Pair.unpairOtherClients);
-UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'create-mnemonic.html', Key.createMnemonic);
-UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
-
-
-
-
-

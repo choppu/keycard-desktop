@@ -1,7 +1,10 @@
 import { ipcRenderer } from "electron";
 import { UI } from "./ui";
 
+const bip39 = require('bip39');
+
 export namespace Key {
+  const mnemonicLength = 12 | 15 | 18 | 24;
   export function createMnemonic() : void {
     ipcRenderer.send("create-mnemonic");
   }
@@ -19,6 +22,28 @@ export namespace Key {
   }
 
   export function loadMnemonic() : void {
+    let mnemonicPhraseField = document.getElementById("load-mnemonic-inp") as HTMLTextAreaElement;
+    let submitBtn = document.getElementById("load-mnemonic-btn") as HTMLInputElement;
+    let cancelBtn = document.getElementById("load-mnemonic-cancel") as HTMLInputElement;
+    let mnemonic: string;
+
+    mnemonicPhraseField.addEventListener("input", (e) => {
+      mnemonic = mnemonicPhraseField.value.trim();
+      bip39.validateMnemonic(mnemonic) ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
+      e.preventDefault();
+    });
+  
+    submitBtn?.addEventListener("click", (e) => {
+      ipcRenderer.send("load-mnemonic", mnemonic);
+      UI.unloadFragment();
+      e.preventDefault();
+    });
+
+    cancelBtn?.addEventListener("click", (e) => {
+      mnemonicPhraseField.value = "";
+      UI.unloadFragment();
+      e.preventDefault;
+    });
 
   }
 

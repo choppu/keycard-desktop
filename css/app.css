@@ -288,3 +288,25 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   font-size: 2.1em;
   line-height: 1.8em;
 }
+
+.keycard__pairing-mnemonic-field {
+  width: 65%;
+  margin: 2em auto;
+}
+
+.keycard__load-mnemonic {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  font-size: 2.1em;
+  line-height: 1.8em;
+  font-family: 'Cutive Mono', monospace;
+  border: none;
+  outline: none;
+  color: white;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  resize: none;
+  text-align: center;
+}
