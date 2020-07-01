@@ -120,7 +120,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__card-info-container {
   float: right;
-  width: 55%;
+  width: 60%;
   box-sizing: border-box;
   background: rgb(25, 27, 32);
   height: 100%;
@@ -130,7 +130,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__commands-list {
   float: left;
-  width: 45%;
+  width: 40%;
   margin: 0 auto;
   padding: 1.8em 0 1.5em 0;
   box-sizing: border-box;
@@ -279,4 +279,12 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 .app-info-header {
   padding: 1em 0;
   text-align: left;
+}
+
+.keycard__wordlist-container {
+  width: 85%;
+  margin: 1em auto;
+  text-align: center;
+  font-size: 2em;
+  line-height: 1.8em;
 }

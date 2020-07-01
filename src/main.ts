@@ -1,5 +1,4 @@
 import { Card } from "./card"
-import { ipcMain } from "electron";
 
 export namespace Main {
   let mainWindow: Electron.BrowserWindow;

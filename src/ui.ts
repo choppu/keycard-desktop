@@ -1,15 +1,24 @@
 import { SessionInfo } from "./session-info";
 import { PIN } from "./pin";
-import { cardInfo } from "./renderer";
 import { PUK } from "./puk";
+import { Pair } from "./pair";
+import { Key } from "./key";
 
 const fs = require('fs');
+
+export let cardInfo: SessionInfo;
 
 export namespace UI {
   export const cryptoRandomString = require('crypto-random-string');
   export const mainContainer = document.getElementById("main-container");
   export const appInfoContainer = document.getElementById("keycard__card-info");
   export const layoutContainer = document.getElementById("cmd-layout-container");
+
+  const btns = document.getElementsByClassName("keycard__cmd-disabled");
+  
+  export function saveCardInfo(appInfo: SessionInfo) : void {
+    cardInfo = appInfo;
+  }
 
   export function addMessageToLog(mess: string): void {
     let logContainer = document.getElementById('keycard-log-container');
@@ -91,11 +100,24 @@ export namespace UI {
     });
   }
 
-  export function enableCmndBtns() {
-    let btns = document.getElementsByClassName("keycard__cmd-disabled");
+  export function enableCmndBtns() : void {
     for(let i = 0; i < btns.length; i++) {
       btns[i].removeAttribute("disabled");
     }
+  }
+
+  export function disableCmdBtns() : void {
+    for(let i = 0; i < btns.length; i++) {
+      btns[i].setAttribute("disabled", "disabled");
+    }
+  }
+
+  export function enablePINButton() : void {
+    document.getElementById("keycard-verify-pin")?.removeAttribute("disabled");
+  }
+
+  export function disablePINButton() : void {
+    document.getElementById("keycard-verify-pin")?.setAttribute("disabled", "disabled");
   }
 
   export function renderErrorMess(errMessage: string, messField: HTMLElement) : void {
@@ -120,6 +142,15 @@ export namespace UI {
 }
 
 UI.renderVerifyPinLayout(document.getElementById("keycard-verify-pin")!, 'verify-pin.html', 'verify-puk.html', PIN.verifyPIN, PUK.verifyPUK);
+UI.renderCmdScreenLayout(document.getElementById("keycard-change-pin")!, 'change-pin.html', PIN.changePIN);
+UI.renderCmdScreenLayout(document.getElementById("keycard-change-puk")!, 'change-puk.html', PUK.changePUK);
+UI.renderCmdScreenLayout(document.getElementById("keycard-change-pairing-pass")!, 'change-pairing.html', Pair.changePairingPassword);
+UI.renderCmdScreenLayout(document.getElementById("keycard-unpair")!, 'unpair.html', Pair.unpair);
+UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair.html', Pair.unpairOtherClients);
+UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'create-mnemonic.html', Key.createMnemonic);
+UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
+
+
 
 
 

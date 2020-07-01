@@ -12,7 +12,7 @@ export namespace CardInit {
     for (let i = 0; i < pinFields.length; i++) {
       if (pinFields[i].name == "pin" || pinFields[i].name == "repeat-pin") {
         pinFields[i].addEventListener("input", function (e) {
-          if ((pinFields.item(0)!.value.length == 6) && (pinFields.item(0)!.value === pinFields.item(1)!.value)) {
+          if (Utils.checkInputNumericValue(pinFields.item(0)!.value, 6) && Utils.checkInputNumericValue(pinFields.item(1)!.value, 6) && (pinFields.item(0)!.value === pinFields.item(1)!.value)) {
             button?.removeAttribute("disabled");
             pin = pinFields.item(0)!.value;
           } else {

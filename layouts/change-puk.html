@@ -1,0 +1,22 @@
+<section id="keycard__change-puk-layout">
+  <div class="keycard__img-card-container">
+    <img src="./img/smartcard_update.png" alt="Smartcard" class="keycard__img">
+  </div>
+  <p class="keycard__pairing-message">Insert your new PUK below.</p>
+  <div class="keycard__pairing-input-container">
+    <div class="keycard__pairing-input-field group">
+      <label for="change-puk" class="keycard__pairing-input-label">PUK</label>
+      <input type="password" id="change-puk" class="keycard__pairing-input keycard__change-puk-el" name="change-puk" size="12"
+        minlength="12" maxlength="12" required placeholder="************">
+    </div>
+    <div class="keycard__pairing-input-field group">
+      <label for="repeat-change-puk" class="keycard__pairing-input-label">Repeat PUK</label>
+      <input type="password" id="repeat-change-puk" class="keycard__pairing-input keycard__change-puk-el"
+        name="repeat-change-puk" size="12" minlength="12" maxlength="12" required placeholder="************">
+    </div>
+  </div>
+  <div class="keycard__btn-container">
+    <input type="submit" id="change-puk-btn" class="keycard__btn" value="Change PUK" disabled="disabled">
+    <input type="button" id="change-puk-cancel" class="keycard__btn" value="Cancel">
+  </div>
+</section>

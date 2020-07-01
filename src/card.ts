@@ -7,6 +7,8 @@ import { Utils } from "./utils";
 import { Pairing } from "keycard-sdk/dist/pairing";
 import { Commandset } from "keycard-sdk/dist/commandset";
 import { WrongPINException } from "keycard-sdk/dist/apdu-exception";
+import { Mnemonic } from "keycard-sdk/dist/mnemonic";
+import { Constants } from "keycard-sdk/dist/constants";
 
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
@@ -67,6 +69,7 @@ export class Card {
           await this.cmdSet.autoOpenSecureChannel();
           secureChannelOK = true;
           this.window.send("secure-channel", "Secure Channel opened");
+          this.window.send("enable-pin-verification");
           this.sessionInfo.secureChannelOpened = true;
         } catch (err) {
           this.deletePairing(this.cmdSet.applicationInfo.instanceUID);
@@ -170,37 +173,52 @@ export class Card {
     }
   }
 
-  changePIN(pin: string) : void {
-
+  async changePIN(pin: string) : Promise<void> {
+    (await this.cmdSet!.changePIN(pin)).checkOK();
+    this.window.send("pin-changed", "PIN updated");
   }
 
-  changePUK(puk: string) : void {
-
+  async changePUK(puk: string) : Promise<void> {
+    (await this.cmdSet!.changePUK(puk)).checkOK();
+    this.window.send("puk-changed", "PUK updated");
   }
 
-  changePairingPassword(cpairingPassword: string) : void {
-
+  async changePairingPassword(pairingPassword: string) : Promise<void> {
+    (await this.cmdSet!.changePairingPassword(pairingPassword)).checkOK();
+    this.window.send("pairing-changed", "Pairing Password updated");
   }
 
-  async unpair() : Promise<void> {
+  async unpairCard() : Promise<void> {
     await this.cmdSet!.autoUnpair();
+    this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
     this.window.send('card-unpaired', "Card unpaired");
   }
 
   async unpairOthers() : Promise<void> {
     await this.cmdSet!.unpairOthers();
-    this.window.send('card-unpaired', "Other clients unpaired");
+    this.window.send('others-unpaired', "Other clients unpaired");
   }
 
-  createMnemonic() : void {
-
+  async createMnemonic() : Promise<void> {
+    let resp = (await this.cmdSet!.generateMnemonic(Constants.GENERATE_MNEMONIC_12_WORDS)).checkOK().data;
+    let mnemonicPhrase = new Mnemonic(resp);
+    mnemonicPhrase.fetchBIP39EnglishWordlist();
+    let keyUID = (await this.cmdSet!.loadBIP32KeyPair(mnemonicPhrase.toBIP32KeyPair())).checkOK().data;
+    this.sessionInfo.keyUID = Utils.hx(keyUID);
+    this.sessionInfo.hasMasterKey = true;
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send('mnemonic-created', "Mnemonic created", mnemonicPhrase.toMnemonicPhrase());
   }
 
   loadMnemonic(mnemonicList: string[]) : void {
 
   }
 
-  removeKey() : void {
+  async removeKey() : Promise<void> {
+    await this.cmdSet!.removeKey();
+    this.sessionInfo.hasMasterKey = false;
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send('key-removed', "Key removed");
 
   }
 
@@ -227,6 +245,7 @@ export class Card {
             card.window.send('card-removed', `Card has been removed from ${reader.name}`);
             card.sessionInfo.reset();
             card.window.send("application-info", card.sessionInfo);
+            card.window.send("diasble-cmds");
             reader.disconnect(reader.SCARD_LEAVE_CARD, (_: Error) => {});   
           }
           
@@ -250,7 +269,7 @@ export class Card {
     ipcMain.on("change-pin", (_, pin) => this.changePIN(pin));
     ipcMain.on("change-puk", (_, puk) => this.changePUK(puk));
     ipcMain.on("change-pairing-password", (_, pairingPassword) => this.changePairingPassword(pairingPassword));
-    ipcMain.on("unpair", async (_) => this.unpair());
+    ipcMain.on("unpair", async (_) => this.unpairCard());
     ipcMain.on("unpair-others", async (_) => this.unpairOthers());
     ipcMain.on("create-mnemonic", async (_) => this.createMnemonic());
     ipcMain.on("create-mnemonic", async (_, mnemonicList) => this.loadMnemonic(mnemonicList));

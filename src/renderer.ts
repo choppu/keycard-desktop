@@ -4,9 +4,9 @@ import { Pair } from "./pair";
 import { SessionInfo } from "./session-info";
 import { PUK } from "./puk";
 import { PIN } from "./pin";
+import { Key } from "./key";
 
 const { ipcRenderer } = require('electron');
-export let cardInfo: SessionInfo;
 
 export function updateLogMessage(event: string): void {
   ipcRenderer.on(event, (_, mess) => {
@@ -29,7 +29,7 @@ ipcRenderer.on("pairing-needed", (_, mess) => {
 })
 
 ipcRenderer.on("application-info", function (_, sessionInfo) {
-  cardInfo = sessionInfo;
+  UI.saveCardInfo(sessionInfo);
   if(sessionInfo.cardConnected) {
     UI.renderAppInfo(sessionInfo);
   } else {
@@ -54,6 +54,20 @@ ipcRenderer.on("puk-screen-needed", (_) => {
   UI.loadFragment('verify-puk.html', PUK.verifyPUK);
 });
 
+ipcRenderer.on("enable-pin-verification", (_) => {
+  UI.enablePINButton();
+});
+
+ipcRenderer.on("diasble-cmds", (_) => {
+  UI.disableCmdBtns();
+  UI.disablePINButton();
+});
+
+ipcRenderer.on('mnemonic-created', (_, mess, wordList) => {
+  UI.loadFragment('mnemonic-wordlist.html', () => (Key.renderMnemonicWordlist(wordList)));
+  UI.addMessageToLog(mess);
+});
+
 updateLogMessage('card-detected');
 updateLogMessage('card-connected');
 updateLogMessage('pairing-found');
@@ -62,4 +76,10 @@ updateLogMessage('paired');
 updateLogMessage('pin-verification-failed');
 updateLogMessage('puk-verified');
 updateLogMessage('unblock-pin-failed');
+updateLogMessage('pin-changed');
+updateLogMessage('puk-changed');
+updateLogMessage('pairing-changed');
+updateLogMessage('card-unpaired');
+updateLogMessage('others-unpaired');
+updateLogMessage('key-removed');
 
