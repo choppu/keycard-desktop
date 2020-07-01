@@ -310,3 +310,37 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   resize: none;
   text-align: center;
 }
+
+.keycard__loading {
+  display: inline-block;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin:  4em 0;
+}
+.keycard__loading div {
+  position: absolute;
+  border: 4px solid rgb(112, 191, 167);
+  opacity: 1;
+  border-radius: 50%;
+  animation: keycard__loading 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.keycard__loading div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes keycard__loading {
+  0% {
+    top: 72px;
+    left: 72px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 144px;
+    height: 144px;
+    opacity: 0;
+  }
+}
