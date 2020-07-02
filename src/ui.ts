@@ -45,9 +45,9 @@ export namespace UI {
     document.getElementById("key-path")!.innerHTML = `<span class="keycard__app-info-label">Key Path</span> ${appInfo.keyPath}`;
 
     if (appInfo.hasMasterKey) {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID</span> ${appInfo.keyUID}`;
+      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Mnemonic UID</span> ${appInfo.keyUID}`;
     } else {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID</span> The card has no master key`;
+      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Mnemonic UID</span> The card has no master key`;
     }
   }
 

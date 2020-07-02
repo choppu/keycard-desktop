@@ -9,8 +9,8 @@ export class  SessionInfo {
   pairingSlots!: string;
   keyUID!: string;
   keyPath!: string;
-  pinRetry!: number;
-  pukRetry!: number
+  pinRetry!: number | string;
+  pukRetry!: number | string;
   hasMasterKey!: boolean;
   secureChannelOpened!: boolean;
   pinVerified!: boolean;
@@ -39,8 +39,8 @@ export class  SessionInfo {
     this.appVersion = "";
     this.pairingSlots = "";
     this.keyUID = "";
-    this.pinRetry = 0;
-    this.pukRetry = 0;
+    this.pinRetry = "No data available";
+    this.pukRetry = "No data available";
     this.keyPath = "";
     this.hasMasterKey = false;
     this.secureChannelOpened = false;

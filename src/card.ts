@@ -59,7 +59,7 @@ export class Card {
       await this.getCashAppletData(channel);
       await this.openSecureChannel();
     } catch (err) {
-      this.window.send("card-exceptions", err);
+      this.window.send("card-exceptions", err.message);
     }
   }
 
@@ -202,7 +202,7 @@ export class Card {
       this.window.send("pin-verified");
       this.sessionInfo.pinVerified = true;
     } catch (err) {
-      this.sessionInfo.pukRetry--;
+      this.sessionInfo.pukRetry = (typeof this.sessionInfo.pukRetry == "number") ? (this.sessionInfo.pukRetry--) : this.sessionInfo.pukRetry;
       this.window.send('application-info', this.sessionInfo);
       if (this.sessionInfo.pukRetry > 0) {
         this.window.send("puk-screen-needed");
@@ -250,8 +250,8 @@ export class Card {
     this.window.send('mnemonic-created', mnemonicPhrase.toMnemonicPhrase());
   }
 
-  async loadMnemonic(mnemonicList: string) : Promise<void> {
-    let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonicList));
+  async loadMnemonic(mnemonic: string) : Promise<void> {
+    let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonic));
     let keyUID = (await this.cmdSet!.loadBIP32KeyPair(keyPair)).checkOK().data;
     this.sessionInfo.keyUID = Utils.hx(keyUID);
     this.sessionInfo.hasMasterKey = true;
@@ -310,17 +310,27 @@ export class Card {
     });
   }
 
+  withErrorHandler(fn: (...args: any) => Promise<void>) : (ev: Event) => void {
+    return async (_: Event, ...args: any) => {
+      try {
+        await fn.call(this, ...args);
+      } catch(err) {
+        this.window.send("card-exceptions", err.message);
+      }
+    }
+  }
+
   installEventHandlers(): void {
-    ipcMain.on("open-secure-channel", (_) => this.openSecureChannel());
-    ipcMain.on("verify-pin", (_, pin: string) => this.verifyPIN(pin));
-    ipcMain.on("verify-puk", (_, puk: string, newPin: string) => this.verifyPUK(puk, newPin));
-    ipcMain.on("change-pin", (_, pin) => this.changePIN(pin));
-    ipcMain.on("change-puk", (_, puk) => this.changePUK(puk));
-    ipcMain.on("change-pairing-password", (_, pairingPassword) => this.changePairingPassword(pairingPassword));
-    ipcMain.on("unpair", async (_) => this.unpairCard());
-    ipcMain.on("unpair-others", async (_) => this.unpairOthers());
-    ipcMain.on("create-mnemonic", async (_) => this.createMnemonic());
-    ipcMain.on("load-mnemonic", async (_, mnemonicList) => this.loadMnemonic(mnemonicList));
-    ipcMain.on("remove-key", async (_) => this.removeKey());
+    ipcMain.on("open-secure-channel", this.withErrorHandler(this.openSecureChannel));
+    ipcMain.on("verify-pin", this.withErrorHandler(this.verifyPIN));
+    ipcMain.on("verify-puk", this.withErrorHandler(this.verifyPUK));
+    ipcMain.on("change-pin", this.withErrorHandler(this.changePIN));
+    ipcMain.on("change-puk", this.withErrorHandler(this.changePUK));
+    ipcMain.on("change-pairing-password", this.withErrorHandler(this.changePairingPassword));
+    ipcMain.on("unpair", this.withErrorHandler(this.unpairCard));
+    ipcMain.on("unpair-others", this.withErrorHandler(this.unpairOthers));
+    ipcMain.on("create-mnemonic", this.withErrorHandler(this.createMnemonic));
+    ipcMain.on("load-mnemonic", this.withErrorHandler(this.loadMnemonic));
+    ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
   }
 }
