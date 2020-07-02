@@ -3,6 +3,7 @@ import { Utils } from "./utils";
 import { ApplicationStatus } from "keycard-sdk/dist/application-status";
 
 export class  SessionInfo {
+  cashAddress!: string;
   instanceUID!: string;
   appVersion!: string;
   pairingSlots!: string;
@@ -33,6 +34,7 @@ export class  SessionInfo {
   }
 
   reset() {
+    this.cashAddress = "";
     this.instanceUID = "";
     this.appVersion = "";
     this.pairingSlots = "";

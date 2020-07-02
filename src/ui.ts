@@ -37,6 +37,7 @@ export namespace UI {
     header!.innerHTML = "Application Info";
     header!.classList.add("keycard__app-info-header");
     header!.classList.remove("keycard__card-info-container-message");
+    document.getElementById("cash-address")!.innerHTML = `<span class="keycard__app-info-label">Cash Address:</span> ${appInfo.cashAddress}`;
     document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID:</span> ${appInfo.instanceUID}`;
     document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version:</span> ${appInfo.appVersion}`;
     document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots:</span> ${appInfo.pairingSlots}`;
@@ -133,6 +134,7 @@ export namespace UI {
     header!.innerHTML = "No card connected";
     header!.classList.remove("keycard__app-info-header");
     header!.classList.add("keycard__card-info-container-message");
+    document.getElementById("cash-address")!.innerHTML = "";
     document.getElementById("instance-uid")!.innerHTML = "";
     document.getElementById("app-version")!.innerHTML = "";
     document.getElementById("pairing-slots")!.innerHTML = "";
