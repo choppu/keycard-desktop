@@ -40,6 +40,8 @@ ipcRenderer.on("application-info", function (_, sessionInfo) {
   UI.saveCardInfo(sessionInfo);
   if(sessionInfo.cardConnected) {
     UI.renderAppInfo(sessionInfo);
+
+    (sessionInfo.pinVerified && sessionInfo.hasMasterKey) ? UI.enableCmdButton(document.getElementById("keycard-chage-wall")!) : UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
   } else {
     UI.renderNoAppInfo();
   } 
@@ -89,6 +91,11 @@ ipcRenderer.on('mnemonic-created', (_, wordList) => {
   UI.addMessageToLog("Mnemonic created");
 });
 
+ipcRenderer.on('wallet-changed', (_, wordList) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Wallet changed");
+});
+
 ipcRenderer.on('card-unpaired', (_) => {
   UI.unloadFragment();
   UI.addMessageToLog("Card unpaired");
@@ -123,6 +130,7 @@ UI.renderCmdScreenLayout(document.getElementById("keycard-unpair")!, 'unpair.htm
 UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair.html', Pair.unpairOtherClients);
 UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'waiting.html', Key.createMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'load-mnemonic.html', Key.loadMnemonic);
+UI.renderCmdScreenLayout(document.getElementById("keycard-chage-wall")!, 'change-wallet.html', Key.changeWallet);
 UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
 
 document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {

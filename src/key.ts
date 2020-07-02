@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import { UI } from "./ui";
+import { KeyPath } from "keycard-sdk/dist/key-path";
 
 const bip39 = require('bip39');
 
@@ -46,6 +47,40 @@ export namespace Key {
       e.preventDefault;
     });
 
+  }
+
+  export function changeWallet() : void {
+    let walletPath = document.getElementById("change-wallet-path") as HTMLInputElement;
+    let submitBtn = document.getElementById("change-wallet-path-btn") as HTMLInputElement;
+    let cancelBtn = document.getElementById("change-wallet-path-cancel") as HTMLInputElement;
+
+    walletPath.addEventListener("input", (e) => {
+      if (walletPath.value == "") {
+        submitBtn.setAttribute("disabled", "disabled");
+        return;
+      }
+
+      try {
+        new KeyPath(walletPath.value);
+        submitBtn.removeAttribute("disabled");
+      } catch (error) {
+        submitBtn.setAttribute("disabled", "disabled");
+      }
+    });
+
+    submitBtn.addEventListener("click", (e) => {
+      ipcRenderer.send('change-wallet', walletPath.value);
+      UI.unloadFragment();
+      UI.loadFragment("waiting.html", () => {
+        document.getElementById("waiting-message")!.innerHTML = "Updating wallet path. Please don't disconnect your card.";
+      });
+      e.preventDefault();
+    });
+
+    cancelBtn.addEventListener("click", (e) => {
+      UI.unloadFragment();
+      e.preventDefault();
+    });
   }
 
   export function removeKey() : void {

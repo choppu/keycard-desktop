@@ -172,9 +172,9 @@ export class Card {
     try {
       (await this.cmdSet!.verifyPIN(pin)).checkAuthOK();
       this.sessionInfo.pinRetry = maxPINRetryCount;
+      this.sessionInfo.pinVerified = true;
       this.window.send('application-info', this.sessionInfo);
       this.window.send("pin-verified");
-      this.sessionInfo.pinVerified = true;
     } catch (err) {
       if (err.retryAttempts != undefined) {
         this.sessionInfo.pinRetry = err.retryAttempts;
@@ -197,10 +197,10 @@ export class Card {
       (await this.cmdSet!.unblockPIN(puk, newPin)).checkOK();
       this.sessionInfo.pinRetry = maxPINRetryCount;
       this.sessionInfo.pukRetry = maxPUKRetryCount;
+      this.sessionInfo.pinVerified = true;
       this.window.send('application-info', this.sessionInfo);
       this.window.send("puk-verified");
       this.window.send("pin-verified");
-      this.sessionInfo.pinVerified = true;
     } catch (err) {
       this.sessionInfo.pukRetry = (typeof this.sessionInfo.pukRetry == "number") ? (this.sessionInfo.pukRetry--) : this.sessionInfo.pukRetry;
       this.window.send('application-info', this.sessionInfo);
@@ -258,6 +258,13 @@ export class Card {
     this.sessionInfo.keyPath = 'm';
     this.window.send('application-info', this.sessionInfo);
     this.window.send('mnemonic-loaded');
+  }
+
+  async changeWallet(wallet: string) : Promise<void> {
+    (await this.cmdSet!.deriveKey(wallet)).checkOK();
+    this.sessionInfo.keyPath = wallet;
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send('wallet-changed');
   }
 
   async removeKey() : Promise<void> {
@@ -331,6 +338,7 @@ export class Card {
     ipcMain.on("unpair-others", this.withErrorHandler(this.unpairOthers));
     ipcMain.on("create-mnemonic", this.withErrorHandler(this.createMnemonic));
     ipcMain.on("load-mnemonic", this.withErrorHandler(this.loadMnemonic));
+    ipcMain.on("change-wallet", this.withErrorHandler(this.changeWallet));
     ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
   }
 }
