@@ -20,6 +20,7 @@ export namespace Main {
         nodeIntegration: true
       }
     });
+    mainWindow.removeMenu();
     mainWindow.loadFile('../index.html');
     card = new Card(mainWindow.webContents);
     mainWindow.webContents.once("dom-ready", () => {
