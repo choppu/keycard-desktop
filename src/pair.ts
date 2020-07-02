@@ -54,6 +54,9 @@ export namespace Pair {
     btn.addEventListener("click", (e) => {
       ipcRenderer.send(channel);
       UI.unloadFragment();
+      UI.loadFragment("waiting.html", () => {
+        document.getElementById("waiting-message")!.innerHTML = "Unpairing. Please don't disconnect your card.";
+      });
       e.preventDefault();
     });
 

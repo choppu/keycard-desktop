@@ -89,6 +89,21 @@ ipcRenderer.on('mnemonic-created', (_, wordList) => {
   UI.addMessageToLog("Mnemonic created");
 });
 
+ipcRenderer.on('card-unpaired', (_) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Card unpaired");
+});
+
+ipcRenderer.on('others-unpaired', (_) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Other clients unpaired");
+});
+
+ipcRenderer.on('key-removed', (_) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Key removed");
+});
+
 updateLogMessage('card-connected', "Selecting Keycard Wallet");
 updateLogMessage('pairing-found', "Pairing found");
 updateLogMessage('secure-channel', "Secure Channel opened");
@@ -98,10 +113,7 @@ updateLogMessage('unblock-pin-failed', "PUK tries exceeded. The card has been bl
 updateLogMessage('pin-changed', "PIN updated");
 updateLogMessage('puk-changed', "PUK updated");
 updateLogMessage('pairing-changed', "Pairing Password updated");
-updateLogMessage('card-unpaired', "Card unpaired");
-updateLogMessage('others-unpaired', "Other clients unpaired");
 updateLogMessage('mnemonic-loaded', "Mnemonic loaded");
-updateLogMessage('key-removed', "Key removed");
 
 UI.renderVerifyPinLayout(document.getElementById("keycard-verify-pin")!, 'verify-pin.html', 'verify-puk.html', PIN.verifyPIN, PUK.verifyPUK);
 UI.renderCmdScreenLayout(document.getElementById("keycard-change-pin")!, 'change-pin.html', PIN.changePIN);
@@ -109,7 +121,7 @@ UI.renderCmdScreenLayout(document.getElementById("keycard-change-puk")!, 'change
 UI.renderCmdScreenLayout(document.getElementById("keycard-change-pairing-pass")!, 'change-pairing.html', Pair.changePairingPassword);
 UI.renderCmdScreenLayout(document.getElementById("keycard-unpair")!, 'unpair.html', Pair.unpair);
 UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair.html', Pair.unpairOtherClients);
-UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'create-mnemonic.html', Key.createMnemonic);
+UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'waiting.html', Key.createMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'load-mnemonic.html', Key.loadMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
 

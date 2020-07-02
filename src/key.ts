@@ -6,6 +6,7 @@ const bip39 = require('bip39');
 export namespace Key {
   const mnemonicLength = 12 | 15 | 18 | 24;
   export function createMnemonic() : void {
+    document.getElementById("waiting-message")!.innerHTML = "Creating mnemonic. Please don't disconnect your card.";
     ipcRenderer.send("create-mnemonic");
   }
 
@@ -54,6 +55,9 @@ export namespace Key {
     submitBtn.addEventListener("click", (e) => {
       ipcRenderer.send('remove-key');
       UI.unloadFragment();
+      UI.loadFragment("waiting.html", () => {
+        document.getElementById("waiting-message")!.innerHTML = "Removing key. Please don't disconnect your card.";
+      });
       e.preventDefault();
     });
 
