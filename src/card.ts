@@ -6,7 +6,6 @@ import { SessionInfo } from "./session-info";
 import { Utils } from "./utils";
 import { Pairing } from "keycard-sdk/dist/pairing";
 import { Commandset } from "keycard-sdk/dist/commandset";
-import { WrongPINException } from "keycard-sdk/dist/apdu-exception";
 import { Mnemonic } from "keycard-sdk/dist/mnemonic";
 import { Constants } from "keycard-sdk/dist/constants";
 import { KeyPath } from "keycard-sdk/dist/key-path";
@@ -82,7 +81,9 @@ export class Card {
         await this.initializeCard();
       } else {
         try {
-          await this.pairCard();
+          if (!(await this.pairCard())) {
+            return;
+          }
         } catch (err) {
           continue;
         }
@@ -96,13 +97,8 @@ export class Card {
         this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
       }
 
-      let status = new Keycard.ApplicationStatus((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
-      let path = new KeyPath((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_KEY_PATH)).checkOK().data);
-      this.sessionInfo.keyPath = path.toString();
-      this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo);
-      this.sessionInfo.setApplicationStatus(status);
-      this.window.send('application-info', this.sessionInfo);
-      this.window.send("enable-pin-verification");
+      await this.displayData();
+      this.window.send("disable-open-secure-channel");
     }
   }
 
@@ -122,7 +118,7 @@ export class Card {
     })
   }
 
-  pairCard(): Promise<void> {
+  pairCard(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let pairingInfo: string;
       let instanceUID = this.cmdSet!.applicationInfo.instanceUID;
@@ -131,23 +127,45 @@ export class Card {
         pairingInfo = this.loadPairing(instanceUID);
         this.cmdSet!.setPairing(Pairing.fromString(pairingInfo));
         this.window.send("pairing-found");
-        resolve();
+        resolve(true);
       } else {
         this.window.send("pairing-needed");
         ipcMain.once("pairing-pass-submitted", async (_, pairingPassword: string) => {
-          try {
-            await this.cmdSet!.autoPair(pairingPassword);
-          } catch {
-            reject("Error: invalid password");
-            return;
-          }
-          (await this.cmdSet!.select()).checkOK();
-          this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
-          this.window.send("paired");
-          resolve();
+          if(pairingPassword) {
+            try {
+              await this.cmdSet!.autoPair(pairingPassword);
+            } catch {
+              reject("Error: invalid password");
+              return;
+            }
+            (await this.cmdSet!.select()).checkOK();
+            this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
+            this.window.send("paired");
+            resolve(true);
+          } else {
+            this.displayUnpairedData();
+            resolve(false);
+          }        
         });
       }
     });
+  }
+
+  async displayData() : Promise<void> {
+    let status = new Keycard.ApplicationStatus((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
+    let path = new KeyPath((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_KEY_PATH)).checkOK().data);
+    this.sessionInfo.keyPath = path.toString();
+    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo);
+    this.sessionInfo.setApplicationStatus(status);
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send("enable-pin-verification");
+  }
+
+  displayUnpairedData() : void {
+    this.sessionInfo.keyPath = "No data available";
+    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo);
+    this.window.send('application-info', this.sessionInfo);
+    this.window.send("enable-open-secure-channel");
   }
 
   async verifyPIN(pin: string): Promise<void> {
@@ -174,7 +192,7 @@ export class Card {
     }
   }
 
-  async verifyPUK(puk: string, newPin: string): Promise<void> {
+  async verifyPUK(puk: string, newPin: string) : Promise<void> {
     try {
       (await this.cmdSet!.unblockPIN(puk, newPin)).checkOK();
       this.sessionInfo.pinRetry = maxPINRetryCount;
@@ -194,12 +212,12 @@ export class Card {
     }
   }
 
-  async changePIN(pin: string): Promise<void> {
+  async changePIN(pin: string) : Promise<void> {
     (await this.cmdSet!.changePIN(pin)).checkOK();
     this.window.send("pin-changed");
   }
 
-  async changePUK(puk: string): Promise<void> {
+  async changePUK(puk: string) : Promise<void> {
     (await this.cmdSet!.changePUK(puk)).checkOK();
     this.window.send("puk-changed");
   }
@@ -209,18 +227,18 @@ export class Card {
     this.window.send("pairing-changed");
   }
 
-  async unpairCard(): Promise<void> {
+  async unpairCard() : Promise<void> {
     await this.cmdSet!.autoUnpair();
     this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
     this.window.send('card-unpaired');
   }
 
-  async unpairOthers(): Promise<void> {
+  async unpairOthers() : Promise<void> {
     await this.cmdSet!.unpairOthers();
     this.window.send('others-unpaired');
   }
 
-  async createMnemonic(): Promise<void> {
+  async createMnemonic() : Promise<void> {
     let resp = (await this.cmdSet!.generateMnemonic(Constants.GENERATE_MNEMONIC_12_WORDS)).checkOK().data;
     let mnemonicPhrase = new Mnemonic(resp);
     mnemonicPhrase.fetchBIP39EnglishWordlist();
@@ -232,7 +250,7 @@ export class Card {
     this.window.send('mnemonic-created', mnemonicPhrase.toMnemonicPhrase());
   }
 
-  async loadMnemonic(mnemonicList: string): Promise<void> {
+  async loadMnemonic(mnemonicList: string) : Promise<void> {
     let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonicList));
     let keyUID = (await this.cmdSet!.loadBIP32KeyPair(keyPair)).checkOK().data;
     this.sessionInfo.keyUID = Utils.hx(keyUID);
@@ -242,7 +260,7 @@ export class Card {
     this.window.send('mnemonic-loaded');
   }
 
-  async removeKey(): Promise<void> {
+  async removeKey() : Promise<void> {
     await this.cmdSet!.removeKey();
     this.sessionInfo.hasMasterKey = false;
     this.sessionInfo.keyPath = 'm';
@@ -293,6 +311,7 @@ export class Card {
   }
 
   installEventHandlers(): void {
+    ipcMain.on("open-secure-channel", (_) => this.openSecureChannel());
     ipcMain.on("verify-pin", (_, pin: string) => this.verifyPIN(pin));
     ipcMain.on("verify-puk", (_, puk: string, newPin: string) => this.verifyPUK(puk, newPin));
     ipcMain.on("change-pin", (_, pin) => this.changePIN(pin));

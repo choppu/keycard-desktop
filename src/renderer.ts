@@ -66,13 +66,22 @@ ipcRenderer.on('pin-verification-failed', (_, msg) => {
   UI.addMessageToLog(msg);
 });
 
+ipcRenderer.on("enable-open-secure-channel", (_) => {
+  UI.enableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+});
+
+ipcRenderer.on("disable-open-secure-channel", (_) => {
+  UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+});
+
 ipcRenderer.on("enable-pin-verification", (_) => {
-  UI.enablePINButton();
+  UI.enableCmdButton(document.getElementById("keycard-verify-pin")!);
 });
 
 ipcRenderer.on("disable-cmds", (_) => {
   UI.disableCmdBtns();
-  UI.disablePINButton();
+  UI.disableCmdButton(document.getElementById("keycard-verify-pin")!);
+  UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
 });
 
 ipcRenderer.on('mnemonic-created', (_, wordList) => {
@@ -103,3 +112,8 @@ UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair
 UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'create-mnemonic.html', Key.createMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'load-mnemonic.html', Key.loadMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
+
+document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {
+  ipcRenderer.send("open-secure-channel");
+  e.preventDefault();
+});

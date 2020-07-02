@@ -135,7 +135,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   box-sizing: border-box;
   background: rgb(60, 77, 75);
   height: 100vh;
-  padding: 2em 0;
+  padding: 1em 0;
 }
 
 .keycard__cmd-group-container {
@@ -152,7 +152,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 }
 
 .keycard__commands-list {
-  padding: .5em 0 0 0;
+  padding: .2em 0 .8em 0;
 }
 
 .keycard__commands-list-el {
@@ -165,7 +165,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   width: 100%;
   display: block;
   box-sizing: border-box;
-  padding: .6em 1.5em;
+  padding: .4em 1.5em .2em 1.5em;
   box-sizing: border-box;
   border: none;
   color: white;

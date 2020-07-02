@@ -114,12 +114,12 @@ export namespace UI {
     }
   }
 
-  export function enablePINButton() : void {
-    document.getElementById("keycard-verify-pin")?.removeAttribute("disabled");
+  export function enableCmdButton(btn: HTMLElement) : void {
+    btn.removeAttribute("disabled");
   }
 
-  export function disablePINButton() : void {
-    document.getElementById("keycard-verify-pin")?.setAttribute("disabled", "disabled");
+  export function disableCmdButton(btn: HTMLElement) : void {
+    btn.setAttribute("disabled", "disabled");
   }
 
   export function renderErrorMess(errMessage: string, messField: HTMLElement) : void {
