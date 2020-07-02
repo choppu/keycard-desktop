@@ -17,6 +17,7 @@
     "electron": "^9.0.4",
     "electron-store": "^5.2.0",
     "keycard-sdk": "git+https://github.com/choppu/keycard-sdk.git",
+    "qrcode": "^1.4.4",
     "typescript": "^3.9.5"
   },
   "devDependencies": {

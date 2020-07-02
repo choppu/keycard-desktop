@@ -1,11 +1,12 @@
-import { ipcRenderer } from "electron";
+import { ipcRenderer, shell } from "electron";
 import { UI } from "./ui";
 import { KeyPath } from "keycard-sdk/dist/key-path";
 
 const bip39 = require('bip39');
+const QRCode = require('qrcode');
+const ethScanAddr = 'https://etherscan.io/address/';
 
 export namespace Key {
-  const mnemonicLength = 12 | 15 | 18 | 24;
   export function createMnemonic() : void {
     document.getElementById("waiting-message")!.innerHTML = "Creating mnemonic. Please don't disconnect your card.";
     ipcRenderer.send("create-mnemonic");
@@ -78,6 +79,39 @@ export namespace Key {
     });
 
     cancelBtn.addEventListener("click", (e) => {
+      UI.unloadFragment();
+      e.preventDefault();
+    });
+  }
+
+  export function exportKey() : void {
+    document.getElementById("waiting-message")!.innerHTML = "Reading Wallet Address. Please don't disconnect your card.";
+    ipcRenderer.send("export-key");
+  }
+
+  export function generateExportKeyData(pubKey: string, ethAddress: string) : void {
+    let qrCode = document.getElementById("eth-addr-canvas");
+    let pubKeyField = document.getElementById("wallet-public-key");
+    let ethScanLink = document.getElementById("wallet-key-link") as HTMLAnchorElement;
+    let ethAddressField = document.getElementById("wallet-eth-address");
+    let btn = document.getElementById("export-key-ok");
+
+    QRCode.toCanvas(qrCode, `ethereum:${ethAddress}`, {
+      width: 300,
+      scale: 10,
+      errorCorrectionLevel: 'H'
+    });
+    
+    pubKeyField!.innerHTML = pubKey;
+    ethScanLink!.href = ethScanAddr + ethAddress;
+    ethAddressField!.innerHTML = ethAddress;
+
+    ethScanLink.addEventListener("click", (e) => {
+      shell.openExternal(ethScanLink.href);
+      e.preventDefault();
+    });
+
+    btn!.addEventListener("click", (e) => {
       UI.unloadFragment();
       e.preventDefault();
     });

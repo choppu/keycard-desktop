@@ -41,7 +41,13 @@ ipcRenderer.on("application-info", function (_, sessionInfo) {
   if(sessionInfo.cardConnected) {
     UI.renderAppInfo(sessionInfo);
 
-    (sessionInfo.pinVerified && sessionInfo.hasMasterKey) ? UI.enableCmdButton(document.getElementById("keycard-chage-wall")!) : UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
+    if (sessionInfo.pinVerified && sessionInfo.hasMasterKey) {
+      UI.enableCmdButton(document.getElementById("keycard-chage-wall")!);
+      UI.enableCmdButton(document.getElementById("keycard-export-key")!);
+    } else {
+      UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
+      UI.disableCmdButton(document.getElementById("keycard-export-key")!);
+    }
   } else {
     UI.renderNoAppInfo();
   } 
@@ -106,6 +112,11 @@ ipcRenderer.on('others-unpaired', (_) => {
   UI.addMessageToLog("Other clients unpaired");
 });
 
+ipcRenderer.on('key-exported', (_, pubKey, ethAddr) => {
+  UI.loadFragment('export-key.html', () => (Key.generateExportKeyData(pubKey, ethAddr)));
+  UI.addMessageToLog("Wallet Data exported");
+});
+
 ipcRenderer.on('key-removed', (_) => {
   UI.unloadFragment();
   UI.addMessageToLog("Key removed");
@@ -131,6 +142,7 @@ UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair
 UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'waiting.html', Key.createMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'load-mnemonic.html', Key.loadMnemonic);
 UI.renderCmdScreenLayout(document.getElementById("keycard-chage-wall")!, 'change-wallet.html', Key.changeWallet);
+UI.renderCmdScreenLayout(document.getElementById("keycard-export-key")!, 'waiting.html', Key.exportKey);
 UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
 
 document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {

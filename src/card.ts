@@ -267,6 +267,13 @@ export class Card {
     this.window.send('wallet-changed');
   }
 
+  async exportKey() : Promise<void> {
+    let data = (await this.cmdSet!.exportCurrentKey(true)).checkOK().data;
+    let key = BIP32KeyPair.fromTLV(data);
+    let ethAddress = key.toEthereumAddress();
+    this.window.send("key-exported", '0x' + Utils.hx(key.publicKey), '0x' + Utils.hx(ethAddress));
+  }
+
   async removeKey() : Promise<void> {
     await this.cmdSet!.removeKey();
     this.sessionInfo.hasMasterKey = false;
@@ -339,6 +346,7 @@ export class Card {
     ipcMain.on("create-mnemonic", this.withErrorHandler(this.createMnemonic));
     ipcMain.on("load-mnemonic", this.withErrorHandler(this.loadMnemonic));
     ipcMain.on("change-wallet", this.withErrorHandler(this.changeWallet));
+    ipcMain.on("export-key", this.withErrorHandler(this.exportKey));
     ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
   }
 }
