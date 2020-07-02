@@ -114,7 +114,6 @@ ipcRenderer.on('others-unpaired', (_) => {
 
 ipcRenderer.on('key-exported', (_, pubKey, ethAddr) => {
   UI.loadFragment('export-key.html', () => (Key.generateExportKeyData(pubKey, ethAddr)));
-  UI.addMessageToLog("Wallet Data exported");
 });
 
 ipcRenderer.on('key-removed', (_) => {
