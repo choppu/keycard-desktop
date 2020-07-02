@@ -34,21 +34,20 @@ export namespace UI {
 
   export function renderAppInfo(appInfo: SessionInfo): void {
     let header = document.getElementById("app-info-header");
-    header!.innerHTML = "Application Info";
-    header!.classList.add("keycard__app-info-header");
+    header!.innerHTML = "";
     header!.classList.remove("keycard__card-info-container-message");
-    document.getElementById("cash-address")!.innerHTML = `<span class="keycard__app-info-label">Cash Address:</span> ${appInfo.cashAddress}`;
-    document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID:</span> ${appInfo.instanceUID}`;
-    document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version:</span> ${appInfo.appVersion}`;
-    document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots:</span> ${appInfo.pairingSlots}`;
-    document.getElementById("pin-retry")!.innerHTML = `<span class="keycard__app-info-label">PIN retry count:</span> ${appInfo.pinRetry}`;
-    document.getElementById("puk-retry")!.innerHTML = `<span class="keycard__app-info-label">PUK retry count:</span> ${appInfo.pukRetry}`;
-    document.getElementById("key-path")!.innerHTML = `<span class="keycard__app-info-label">Key Path:</span> ${appInfo.keyPath}`;
+    document.getElementById("cash-address")!.innerHTML = `<span class="keycard__app-info-label">Cash Address</span> ${appInfo.cashAddress}`;
+    document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID</span> ${appInfo.instanceUID}`;
+    document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version</span> ${appInfo.appVersion}`;
+    document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots</span> ${appInfo.pairingSlots}`;
+    document.getElementById("pin-retry")!.innerHTML = `<span class="keycard__app-info-label">PIN retry count</span> ${appInfo.pinRetry}`;
+    document.getElementById("puk-retry")!.innerHTML = `<span class="keycard__app-info-label">PUK retry count</span> ${appInfo.pukRetry}`;
+    document.getElementById("key-path")!.innerHTML = `<span class="keycard__app-info-label">Key Path</span> ${appInfo.keyPath}`;
 
     if (appInfo.hasMasterKey) {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID:</span> ${appInfo.keyUID}`;
+      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID</span> ${appInfo.keyUID}`;
     } else {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID:</span> The card has no master key`;
+      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Key UID</span> The card has no master key`;
     }
   }
 
