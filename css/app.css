@@ -120,7 +120,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__card-info-container {
   float: right;
-  width: 60%;
+  width: 72%;
   box-sizing: border-box;
   background: rgb(25, 27, 32);
   height: 100%;
@@ -128,43 +128,65 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   display: inherit;
 }
 
-.keycard__commands-list {
+.keycard__content-container {
   float: left;
-  width: 40%;
+  width: 28%;
   margin: 0 auto;
-  padding: 1.8em 0 1.5em 0;
   box-sizing: border-box;
   background: rgb(60, 77, 75);
   height: 100vh;
+  padding: 2em 0;
+}
+
+.keycard__cmd-group-container {
+  width: 100%;
+  box-sizing: border-box;
+  padding: .5em 0; 
+}
+
+.keycard__list-header{
+  padding: 0 1.5em;
+  font-size: .9em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .4);
+}
+
+.keycard__commands-list {
+  padding: .5em 0 0 0;
 }
 
 .keycard__commands-list-el {
-  width: 80%;
-  margin: 1.4em auto;
+  width: 100%;
   display: block;
-  text-align: center;
+  text-align: left;
 }
 
 .keycard__commands-list-el-link {
   width: 100%;
   display: block;
   box-sizing: border-box;
-  background: rgb(72, 151, 127);
-  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  padding: 1.2em 0;
+  padding: .6em 1.5em;
   box-sizing: border-box;
-  text-align: center;
   border: none;
   color: white;
   font-family: 'Cutive Mono', monospace;
-  font-size: 1em;
+  font-size: .98em;
   outline: none;
-  text-decoration: underline;
-  text-underline-position: under;
+  background: transparent;
+  text-align: left;
+}
+
+.keycard__commands-list-el-link:hover {
+  background: rgba(72, 151, 127, .6);
 }
 
 .keycard__commands-list-el-link:disabled {
-  background: rgba(72, 151, 127, .6);
+  color: rgba(255, 255, 255, .4);
+  font-size: .98em;
+}
+
+.keycard__commands-list-el-link:disabled:hover {
+  background: transparent;
 }
 
 .keycard__card-info-container-hidden {
@@ -245,6 +267,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   font-family: 'Cutive Mono', monospace;
   font-size: 1.1em;
   outline: none;
+  border-radius: 3px;
 }
 
 .keycard__init-info-container {
