@@ -319,13 +319,20 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 .keycard__init-data {
   display: block;
   padding: .8em 0;
+  font-size: 1.4em;
 }
 
-.keycard__init-info-label, .keycard__app-info-label {
+.keycard__app-info-label {
   color: rgb(150, 167, 155);
   display: block;
   font-size: .8em;
   text-transform: uppercase;
+}
+
+.keycard__init-info-label {
+  font-size: 1em;
+  color: white;
+  display: inline-block;
 }
 
 .app-info-header {
