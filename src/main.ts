@@ -21,7 +21,7 @@ export namespace Main {
       }
     });
     mainWindow.removeMenu();
-    mainWindow.loadFile('../index.html');
+    mainWindow.loadFile(`${__dirname}/../index.html`);
     card = new Card(mainWindow.webContents);
     mainWindow.webContents.once("dom-ready", () => {
       card.start();
@@ -32,6 +32,7 @@ export namespace Main {
   export function main(app: Electron.App, browserWindow: typeof BrowserWindow): void {
     BrowserWindow = browserWindow;
     application = app;
+    application.setName("Keycard Desktop");
     application.on('window-all-closed', Main.onWindowAllClosed);
     application.on('ready', Main.onReady);
   }

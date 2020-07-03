@@ -1,7 +1,6 @@
 import { UI } from "./ui";
 import { CardInit } from "./card-init";
 import { Pair } from "./pair";
-import { SessionInfo } from "./session-info";
 import { PUK } from "./puk";
 import { PIN } from "./pin";
 import { Key } from "./key";

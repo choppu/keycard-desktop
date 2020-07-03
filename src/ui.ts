@@ -1,8 +1,4 @@
 import { SessionInfo } from "./session-info";
-import { PIN } from "./pin";
-import { PUK } from "./puk";
-import { Pair } from "./pair";
-import { Key } from "./key";
 
 const fs = require('fs');
 

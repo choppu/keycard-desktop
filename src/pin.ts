@@ -1,7 +1,6 @@
 import { UI, cardInfo } from "./ui";
 import { Utils } from "./utils";
 import { ipcRenderer } from "electron";
-import { PUK } from "./puk";
 
 export namespace PIN {
   export function verifyPIN() : void {
