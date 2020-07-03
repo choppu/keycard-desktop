@@ -75,12 +75,54 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   zoom: 1;
 }
 
+::-webkit-scrollbar {     
+  background-color: rgb(15, 17, 22);
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+  background:  rgb(60, 77, 75);
+  border-radius: 10px;
+}
+
+@keyframes fade {
+  0% {
+      opacity: 0;
+      visibility: hidden;
+  }
+
+  100% {
+      opacity: 1;
+      visibility: visible;
+  }
+}
+
 .keycard__main-container {
   background: rgb(15, 17, 22);
   width: 100%;
   height: 100%;
   color: white;
   height: 100%;
+  opacity: 1;
+  display: inherit;
+  animation: fade 300ms;
+}
+
+.keycard__card-info-container-hidden {
+  opacity: 0;
+  display: none;
+  -webkit-transition: opacity 600ms, visibility 600ms;
+  transition: opacity 200ms, visibility 200ms;
+}
+
+.keycard__pairing-container {
+  color: white;
+  text-align: center;
+  opacity: 1;
+  visibility: visible;
+  display: inherit;
+  animation: fade 300ms;
 }
 
 .keycard__card-info-container-message {
@@ -187,15 +229,6 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 
 .keycard__commands-list-el-link:disabled:hover {
   background: transparent;
-}
-
-.keycard__card-info-container-hidden {
-  display: none;
-}
-
-.keycard__pairing-container {
-  color: white;
-  text-align: center;
 }
 
 .keycard__img-card-container {
@@ -331,11 +364,11 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
 }
 
 .keycard__loading {
-  display: inline-block;
+  display: block;
   position: relative;
-  width: 200px;
-  height: 200px;
-  margin:  4em 0;
+  width: 148px;
+  height: 148px;
+  margin:  4em auto;
 }
 .keycard__loading div {
   position: absolute;
@@ -391,7 +424,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   padding: 2em 1em 2em 2em;
 }
 
-.wallet-public-key-label {
+.keycard__wallet-public-key-label {
   font-size: 1em;
   font-family: 'Inconsolata', monospace;
   box-sizing: border-box;
