@@ -13,9 +13,14 @@ export function updateLogMessage(event: string, msg: string): void {
   });
 }
 
-ipcRenderer.on("card-removed", function (_, readerName) {
+ipcRenderer.on("card-removed", (_, readerName) => {
   UI.unloadFragment();
   UI.addMessageToLog(`Card has been removed from ${readerName}`);
+});
+
+ipcRenderer.on('reader-removed', (_, readerName) => {
+  UI.unloadFragment();
+  UI.addMessageToLog(`Reader ${readerName} removed`);
 });
 
 ipcRenderer.on('card-detected', (_, readerName, err?) => {
