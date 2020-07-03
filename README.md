@@ -14,18 +14,18 @@ Keycard Desktop is an application to manage your Keycard. Here are some screensh
 
 ## Functionality
 
-[x] Show Card Details
-[x] Manage Pairings
-[x] Change Credentials
-[x] Manage Wallet
-[x] Get Ethereum Address with QR Code and link to Etherscan
+- [x] Show Card Details
+- [x] Manage Pairings
+- [x] Change Credentials
+- [x] Manage Wallet
+- [x] Get Ethereum Address with QR Code and link to Etherscan
 
 ## Roadmap
 
-[] Sign Transactions, providing an RPC Interface for other programs
-[] Basic Wallet Functionality
-[] Reinstall Keycard Applet
-[] Autoupdate
+- [ ] Sign Transactions, providing an RPC Interface for other programs
+- [ ] Basic Wallet Functionality
+- [ ] Reinstall Keycard Applet
+- [ ] Autoupdate
 
 ## Copyright and License
 
