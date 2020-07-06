@@ -94,6 +94,8 @@ ipcRenderer.on("disable-cmds", (_) => {
   UI.disableCmdBtns();
   UI.disableCmdButton(document.getElementById("keycard-verify-pin")!);
   UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+  UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
+  UI.disableCmdButton(document.getElementById("keycard-export-key")!);
 });
 
 ipcRenderer.on('mnemonic-created', (_, wordList) => {
