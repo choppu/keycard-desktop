@@ -7,12 +7,12 @@ const QRCode = require('qrcode');
 const ethScanAddr = 'https://etherscan.io/address/';
 
 export namespace Key {
-  export function createMnemonic() : void {
+  export function createMnemonic(): void {
     document.getElementById("waiting-message")!.innerHTML = "Creating mnemonic. Please don't disconnect your card.";
     ipcRenderer.send("create-mnemonic");
   }
 
-  export function renderMnemonicWordlist(wordList: string) : void {
+  export function renderMnemonicWordlist(wordList: string): void {
     let wordListContainer = document.getElementById("wordlist-container");
     let btn = document.getElementById("wordlist-ok") as HTMLInputElement;
 
@@ -24,7 +24,7 @@ export namespace Key {
     });
   }
 
-  export function loadMnemonic() : void {
+  export function loadMnemonic(): void {
     let mnemonicPhraseField = document.getElementById("load-mnemonic-inp") as HTMLTextAreaElement;
     let submitBtn = document.getElementById("load-mnemonic-btn") as HTMLInputElement;
     let cancelBtn = document.getElementById("load-mnemonic-cancel") as HTMLInputElement;
@@ -35,7 +35,7 @@ export namespace Key {
       bip39.validateMnemonic(mnemonic) ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
       e.preventDefault();
     });
-  
+
     submitBtn?.addEventListener("click", (e) => {
       ipcRenderer.send("load-mnemonic", mnemonic);
       UI.unloadFragment();
@@ -47,10 +47,9 @@ export namespace Key {
       UI.unloadFragment();
       e.preventDefault;
     });
-
   }
 
-  export function changeWallet() : void {
+  export function changeWallet(): void {
     let walletPath = document.getElementById("change-wallet-path") as HTMLInputElement;
     let submitBtn = document.getElementById("change-wallet-path-btn") as HTMLInputElement;
     let cancelBtn = document.getElementById("change-wallet-path-cancel") as HTMLInputElement;
@@ -84,12 +83,12 @@ export namespace Key {
     });
   }
 
-  export function exportKey() : void {
+  export function exportKey(): void {
     document.getElementById("waiting-message")!.innerHTML = "Reading Wallet Address. Please don't disconnect your card.";
     ipcRenderer.send("export-key");
   }
 
-  export function generateExportKeyData(pubKey: string, ethAddress: string) : void {
+  export function generateExportKeyData(pubKey: string, ethAddress: string): void {
     let qrCode = document.getElementById("eth-addr-canvas");
     let pubKeyField = document.getElementById("wallet-public-key");
     let ethScanLink = document.getElementById("wallet-key-link") as HTMLAnchorElement;
@@ -101,7 +100,7 @@ export namespace Key {
       scale: 10,
       errorCorrectionLevel: 'H'
     });
-    
+
     pubKeyField!.innerHTML = pubKey;
     ethScanLink!.href = ethScanAddr + ethAddress;
     ethAddressField!.innerHTML = ethAddress;
@@ -117,7 +116,7 @@ export namespace Key {
     });
   }
 
-  export function removeKey() : void {
+  export function removeKey(): void {
     let submitBtn = document.getElementById("remove-btn") as HTMLInputElement;
     let cancelBtn = document.getElementById("remove-cancel") as HTMLInputElement;
 

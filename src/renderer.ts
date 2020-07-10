@@ -4,6 +4,7 @@ import { Pair } from "./pair";
 import { PUK } from "./puk";
 import { PIN } from "./pin";
 import { Key } from "./key";
+import { InstallApplet } from "./install-applet";
 
 const { ipcRenderer } = require('electron');
 
@@ -42,7 +43,7 @@ ipcRenderer.on("pairing-needed", (_) => {
 
 ipcRenderer.on("application-info", function (_, sessionInfo) {
   UI.saveCardInfo(sessionInfo);
-  if(sessionInfo.cardConnected) {
+  if (sessionInfo.cardConnected) {
     UI.renderAppInfo(sessionInfo);
 
     if (sessionInfo.pinVerified && sessionInfo.hasMasterKey) {
@@ -54,7 +55,7 @@ ipcRenderer.on("application-info", function (_, sessionInfo) {
     }
   } else {
     UI.renderNoAppInfo();
-  } 
+  }
 });
 
 ipcRenderer.on("card-exceptions", function (_, err) {
@@ -82,6 +83,10 @@ ipcRenderer.on("enable-open-secure-channel", (_) => {
   UI.enableCmdButton(document.getElementById("keycard-open-secure-channel")!);
 });
 
+ipcRenderer.on("enable-reinstall-applet", (_) => {
+  UI.enableCmdButton(document.getElementById("keycard-reinstall-applet")!);
+});
+
 ipcRenderer.on("disable-open-secure-channel", (_) => {
   UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
 });
@@ -94,6 +99,7 @@ ipcRenderer.on("disable-cmds", (_) => {
   UI.disableCmdBtns();
   UI.disableCmdButton(document.getElementById("keycard-verify-pin")!);
   UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+  UI.disableCmdButton(document.getElementById("keycard-reinstall-applet")!);
   UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
   UI.disableCmdButton(document.getElementById("keycard-export-key")!);
 });
@@ -127,6 +133,15 @@ ipcRenderer.on('key-removed', (_) => {
   UI.addMessageToLog("Key removed");
 });
 
+ipcRenderer.on('applet-inst-progress', (_, msg) => {
+  InstallApplet.updateProgressMessage(msg);
+});
+
+ipcRenderer.on('applet-installed', (_) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Applet installed");
+});
+
 updateLogMessage('card-connected', "Selecting Keycard Wallet");
 updateLogMessage('pairing-found', "Pairing found");
 updateLogMessage('secure-channel', "Secure Channel opened");
@@ -149,6 +164,7 @@ UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'loa
 UI.renderCmdScreenLayout(document.getElementById("keycard-chage-wall")!, 'change-wallet.html', Key.changeWallet);
 UI.renderCmdScreenLayout(document.getElementById("keycard-export-key")!, 'waiting.html', Key.exportKey);
 UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
+UI.renderCmdScreenLayout(document.getElementById("keycard-reinstall-applet")!, 'reinstall.html', InstallApplet.install);
 
 document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {
   ipcRenderer.send("open-secure-channel");

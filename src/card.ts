@@ -14,9 +14,11 @@ import { CardChannel } from "keycard-sdk/dist/card-channel";
 import { CashCommandset } from "keycard-sdk/dist/cash-commandset";
 import { CashApplicationInfo } from "keycard-sdk/dist/cash-application-info";
 import { Ethereum } from "keycard-sdk/dist/ethereum";
+import { GlobalPlatformCommandset } from "keycard-sdk/dist/global-platform-commandset"
 
 const pcsclite = require("@pokusew/pcsclite");
 const Store = require('electron-store');
+const fs = require("fs");
 
 const maxPINRetryCount = 3;
 const maxPUKRetryCount = 5;
@@ -24,6 +26,7 @@ const maxPairing = 5;
 
 export class Card {
   window: WebContents;
+  channel?: CardChannel;
   cmdSet?: Commandset;
   sessionInfo: SessionInfo;
   pairingStore: any;
@@ -51,21 +54,29 @@ export class Card {
     this.pairingStore.delete(Utils.hx(instanceUID));
   }
 
+  async refreshConnection(): Promise<void> {
+    await this.getCashAppletData();
+    await this.openSecureChannel();
+    this.window.send("enable-reinstall-applet");
+  }
+
   async connectCard(reader: any, protocol: number): Promise<void> {
     try {
-      let channel = new Keycard.PCSCCardChannel(reader, protocol);
-      this.cmdSet = new Keycard.Commandset(channel);
+      this.channel = new Keycard.PCSCCardChannel(reader, protocol);
+      this.cmdSet = new Keycard.Commandset(this.channel);
       this.window.send('card-connected');
-
-      await this.getCashAppletData(channel);
-      await this.openSecureChannel();
+      await this.refreshConnection();
     } catch (err) {
-      this.window.send("card-exceptions", err.message);
+      if (err.sw == 0x6a82) {
+        this.window.send("card-exceptions", "Error: Keycard Applet not installed");
+      } else {
+        this.window.send("card-exceptions", err.message);
+      }
     }
   }
 
-  async getCashAppletData(channel: CardChannel): Promise<void> {
-    let cashCmdSet = new CashCommandset(channel);
+  async getCashAppletData(): Promise<void> {
+    let cashCmdSet = new CashCommandset(this.channel!);
     try {
       let data = new CashApplicationInfo((await cashCmdSet.select()).checkOK().data);
       this.sessionInfo.cashAddress = '0x' + Utils.hx(Ethereum.toEthereumAddress(data.pubKey));
@@ -286,7 +297,43 @@ export class Card {
 
   }
 
-  resetConnection() : void {
+  async installApplet(path: string, installWallet: boolean, installCash: boolean, installNDEF: boolean): Promise<void> {
+    let cap = fs.readFileSync(path);
+    let gpCmdSet = new GlobalPlatformCommandset(this.channel!);
+
+    (await gpCmdSet.select()).checkOK();
+    await gpCmdSet.openSecureChannel();
+
+    this.window.send("applet-inst-progress", "Deleting the old instances and package");
+    await gpCmdSet.deleteKeycardInstancesAndPackage();
+
+    this.window.send("applet-inst-progress", "Loading the new package");
+    (await gpCmdSet.loadKeycardPackage(cap, (loadedBlock, blockCount) => {
+      this.window.send("applet-inst-progress", "Loaded block " + loadedBlock + "/" + blockCount);
+    }));
+
+    if (installWallet) {
+      this.window.send("applet-inst-progress", "Installing the Keycard Applet");
+      (await gpCmdSet.installKeycardApplet()).checkOK();
+    }
+
+    if (installCash) {
+      this.window.send("applet-inst-progress", "Installing the Cash Applet");
+      (await gpCmdSet.installCashApplet()).checkOK();
+    }
+
+    if (installNDEF) {
+      this.window.send("applet-inst-progress", "Installing the NDEF Applet");
+      (await gpCmdSet.installNDEFApplet(new Uint8Array(0))).checkOK();
+    }
+
+    this.window.send('applet-installed');
+    this.resetConnection();
+    this.sessionInfo.cardConnected = true;
+    await this.refreshConnection();
+  }
+
+  resetConnection(): void {
     this.sessionInfo.reset();
     this.window.send("application-info", this.sessionInfo);
     this.window.send("disable-cmds");
@@ -328,7 +375,7 @@ export class Card {
           });
         }
       });
-      
+
       reader.on('end', () => {
         if (card.sessionInfo.cardConnected) {
           card.window.send('reader-removed', reader.name);
@@ -362,5 +409,6 @@ export class Card {
     ipcMain.on("change-wallet", this.withErrorHandler(this.changeWallet));
     ipcMain.on("export-key", this.withErrorHandler(this.exportKey));
     ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
+    ipcMain.on("install-applet", this.withErrorHandler(this.installApplet));
   }
 }

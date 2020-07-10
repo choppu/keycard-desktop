@@ -1,6 +1,6 @@
 {
   "name": "keycard-desktop",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Keycard Management Application",
   "main": "./out/app.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "bip39": "^3.0.2",
     "crypto-random-string": "^3.2.0",
     "electron-store": "^5.2.0",
-    "keycard-sdk": "^3.0.0",
+    "keycard-sdk": "^3.0.1",
     "qrcode": "^1.4.4",
     "typescript": "^3.9.5"
   },

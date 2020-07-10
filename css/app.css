@@ -249,6 +249,7 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   font-family: 'Inconsolata', monospace;
   padding: 0 1em;
   color: white;
+  transition: opacity 1s;
 }
 
 .keycard__pairing-input-container {
@@ -445,4 +446,90 @@ input[disabled="disabled"], input[disabled="disabled"]:hover {
   line-height: 2em;
   box-sizing: border-box;
   padding: 0 2em 1em 2em;
+}
+
+.keycard__reinstal-form-field {
+  text-align: center;
+  margin: 4em auto;
+}
+
+.keycard__reinstall-field {
+  display: inline-block;
+  margin-bottom: .8em;
+  position: relative;
+  width: 190px;
+}
+
+.keycard__reinstall-file-label {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  width: 100%;
+  background: rgb(72, 151, 127);
+  cursor: pointer;
+  color: #fff;
+  padding: 1em 0;
+  font-family: 'Cutive Mono', monospace;
+  font-size: .95em;
+  border-radius: 3px;
+  box-shadow: 0 3px 3px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  text-transform: uppercase;
+}
+
+.keycard__reinstall-file-input {
+  display: inline-block;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 50px;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.keycard__file-path-label {
+  display: block;
+}
+
+.keycard__check {
+  padding: 0;
+  height: initial;
+  width: initial;
+  margin-bottom: 0;
+  display: none;
+  cursor: pointer;
+}
+
+.keycard__check-label {
+  position: relative;
+  cursor: pointer;
+  margin-right: 2.5em;
+}
+
+.keycard__check-label:before {
+  content:'';
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: 2px solid rgb(72, 151, 127);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
+  padding: .56em;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: .8em;
+}
+
+.keycard__check:checked + .keycard__check-label:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: .1em;
+  left: .5em;
+  width: .25em;
+  height: .8em;
+  border: solid rgb(72, 151, 127);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
