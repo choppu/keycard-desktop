@@ -2,7 +2,7 @@
 
 Keycard Desktop is an application to manage your Keycard. Here are some screenshots of its functionality.
 
-![alt text](https://user-images.githubusercontent.com/66014759/86470194-99433b00-bd43-11ea-8509-afddf70a1d37.png "Keycard Desktop 1")
+![alt text](https://user-images.githubusercontent.com/66014759/87177882-06774300-c2e5-11ea-90f2-806a089530dd.png "Keycard Desktop 1")
 ![alt text](https://user-images.githubusercontent.com/66014759/86470208-9d6f5880-bd43-11ea-8ead-edc3cf7fa1ed.png "Keycard Desktop 2")
 ![alt text](https://user-images.githubusercontent.com/66014759/86470209-9ea08580-bd43-11ea-9516-d728f4ffe709.png "Keycard Desktop 3")
 
