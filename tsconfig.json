@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-      "target": "es5",         
-      "module": "commonjs",    
-      "strict": true,          
-      "esModuleInterop": true,    
+      "target": "es2022",
+      "module": "node20",
+      "moduleResolution": "node16",
+      "strict": true,
+      "esModuleInterop": true,
       "outDir": "./out",
       "rootDir": "./src"
   }

@@ -1,11 +1,12 @@
 {
   "name": "keycard-desktop",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Keycard Management Application",
   "main": "./out/app.js",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && electron ./out/app.js",
+    "clean": "rm -rf out",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder",
     "postinstall": "electron-builder install-app-deps"
@@ -28,16 +29,17 @@
   "author": "Ksenia Balistreri",
   "license": "MIT",
   "dependencies": {
-    "@pokusew/pcsclite": "^0.6.0",
-    "bip39": "^3.0.2",
-    "crypto-random-string": "^3.2.0",
-    "electron-store": "^5.2.0",
-    "keycard-sdk": "^3.0.1",
-    "qrcode": "^1.4.4",
-    "typescript": "^3.9.5"
+    "@nonth/pcsclite": "^0.6.2",
+    "bip39": "^3.1.0",
+    "crypto-random-string": "^5.0.0",
+    "electron-store": "^11.0.2",
+    "keycard-sdk": "^3.1.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "electron": "^11.5.0",
-    "electron-builder": "^22.7.0"
+    "@types/node": "^22.7.7",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.4.0",
+    "typescript": "^5.9.3"
   }
 }

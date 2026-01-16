@@ -4,14 +4,21 @@ const fs = require('fs');
 
 export let cardInfo: SessionInfo;
 
-export namespace UI {
-  export const cryptoRandomString = require('crypto-random-string');
-  export const mainContainer = document.getElementById("main-container");
-  export const appInfoContainer = document.getElementById("keycard__card-info");
-  export const layoutContainer = document.getElementById("cmd-layout-container");
+const appInfoHeader = document.getElementById("app-info-header") as HTMLDivElement;
+const appInfoList = document.getElementById("app-info-container") as HTMLElement;
+const cashAddress = document.getElementById("cash-address") as HTMLLIElement;
+const instanceUID = document.getElementById("instance-uid") as HTMLLIElement;
+const appVersion = document.getElementById("app-version") as HTMLLIElement;
+const pairingSlots = document.getElementById("pairing-slots") as HTMLLIElement;
+const pinRetry = document.getElementById("pin-retry") as HTMLLIElement;
+const pukRetry = document.getElementById("puk-retry") as HTMLLIElement;
+const keyPath = document.getElementById("key-path") as HTMLLIElement;
+const keyUID = document.getElementById("key-uid") as HTMLLIElement;
+const mainContainer = document.getElementById("main-container");
+const layoutContainer = document.getElementById("cmd-layout-container");
+const btns = document.getElementsByClassName("keycard__cmd-disabled");
 
-  const btns = document.getElementsByClassName("keycard__cmd-disabled");
-  
+export namespace UI {
   export function saveCardInfo(appInfo: SessionInfo) : void {
     cardInfo = appInfo;
   }
@@ -28,35 +35,36 @@ export namespace UI {
     }
   }
 
-  export function renderAppInfo(appInfo: SessionInfo): void {
-    let header = document.getElementById("app-info-header");
-    header!.innerHTML = "";
-    header!.classList.remove("keycard__card-info-container-message");
-    document.getElementById("cash-address")!.innerHTML = `<span class="keycard__app-info-label">Cash Address</span> ${appInfo.cashAddress}`;
-    document.getElementById("instance-uid")!.innerHTML = `<span class="keycard__app-info-label">Instance UID</span> ${appInfo.instanceUID}`;
-    document.getElementById("app-version")!.innerHTML = `<span class="keycard__app-info-label">Application Version</span> ${appInfo.appVersion}`;
-    document.getElementById("pairing-slots")!.innerHTML = `<span class="keycard__app-info-label">Free pairing slots</span> ${appInfo.pairingSlots}`;
-    document.getElementById("pin-retry")!.innerHTML = `<span class="keycard__app-info-label">PIN retry count</span> ${appInfo.pinRetry}`;
-    document.getElementById("puk-retry")!.innerHTML = `<span class="keycard__app-info-label">PUK retry count</span> ${appInfo.pukRetry}`;
-    document.getElementById("key-path")!.innerHTML = `<span class="keycard__app-info-label">Wallet Path</span> ${appInfo.keyPath}`;
-
-    if (appInfo.hasMasterKey) {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Mnemonic UID</span> ${appInfo.keyUID}`;
+  export function renderAppInfo(appInfo?: SessionInfo): void {
+    appInfoHeader.innerHTML = appInfo ? "" : "No card connected";
+    
+    if(appInfo) {
+        appInfoHeader.classList.remove("keycard__card-info-container-message");
+        appInfoList.classList.remove("keycard__hide-container");
+        cashAddress.innerHTML = appInfo.cashAddress;
+        instanceUID.innerHTML = appInfo.instanceUID;
+        appVersion.innerHTML = appInfo.appVersion;
+        pairingSlots.innerHTML = appInfo.pairingSlots;
+        pinRetry.innerHTML = `${appInfo.pinRetry}`;
+        pukRetry.innerHTML = `${appInfo.pukRetry}`;
+        keyPath.innerHTML = appInfo.keyPath;
+        keyUID.innerHTML = appInfo.keyUID || "The card has no master key";
     } else {
-      document.getElementById("key-uid")!.innerHTML = `<span class="keycard__app-info-label">Mnemonic UID</span> The card has no master key`;
+        appInfoHeader.innerHTML = "No card connected";
+        appInfoHeader.classList.remove("keycard__app-info-header");
+        appInfoHeader.classList.add("keycard__card-info-container-message");
+        appInfoList.classList.add("keycard__hide-container");
     }
   }
 
-  export function renderCmdScreenLayout(btn: HTMLElement, layoutPath: string, onLoad: () => void) : void {
+  export function renderCmdScreenLayout(btn: HTMLButtonElement, onLoad: () => void, pukFunc?: () => void) : void {
     btn.addEventListener("click", (e) => {
-      loadFragment(layoutPath, onLoad);
-      e.preventDefault();
-    });
-  }
-
-  export function renderVerifyPinLayout(btn: HTMLElement, layoutPin: string, layoutPuk: string, pinFunc: () => void, pukFunc: () => void) : void {
-    btn.addEventListener("click", (e) => {
-      cardInfo.pinRetry > 0 ? loadFragment(layoutPin, pinFunc) : loadFragment(layoutPuk, pukFunc);
+      let layout = `${btn.dataset.layout}.html`;
+      if(pukFunc) {
+        cardInfo.pinRetry as number > 0 ? loadFragment(layout, onLoad) : loadFragment('verify-puk.html', pukFunc);
+      } else {
+        loadFragment(layout, onLoad);
+      }
       e.preventDefault();
     });
   }
@@ -87,7 +95,6 @@ export namespace UI {
   export function loadErrorFragment(err: Error): void {
     loadFragment('error.html', () => {
       let errorMessage = document.getElementById("error-message");
-
       errorMessage!.innerHTML = `${err}`;
   
       document.getElementById("btn-error")?.addEventListener("click", function (e) {
@@ -98,15 +105,11 @@ export namespace UI {
   }
 
   export function enableCmndBtns() : void {
-    for(let i = 0; i < btns.length; i++) {
-      btns[i].removeAttribute("disabled");
-    }
+    Array.from(btns).map((btn) => enableCmdButton(btn as HTMLButtonElement));
   }
 
   export function disableCmdBtns() : void {
-    for(let i = 0; i < btns.length; i++) {
-      btns[i].setAttribute("disabled", "disabled");
-    }
+    Array.from(btns).map((btn) => disableCmdButton(btn as HTMLButtonElement));
   }
 
   export function enableCmdButton(btn: HTMLElement) : void {
@@ -115,27 +118,5 @@ export namespace UI {
 
   export function disableCmdButton(btn: HTMLElement) : void {
     btn.setAttribute("disabled", "disabled");
-  }
-
-  export function renderErrorMess(errMessage: string, messField: HTMLElement) : void {
-    messField.innerHTML = errMessage;
-    setTimeout(() => {
-      messField.innerHTML = "";
-    }, 10000);
-  }
-
-  export function renderNoAppInfo() : void {
-    let header = document.getElementById("app-info-header");
-    header!.innerHTML = "No card connected";
-    header!.classList.remove("keycard__app-info-header");
-    header!.classList.add("keycard__card-info-container-message");
-    document.getElementById("cash-address")!.innerHTML = "";
-    document.getElementById("instance-uid")!.innerHTML = "";
-    document.getElementById("app-version")!.innerHTML = "";
-    document.getElementById("pairing-slots")!.innerHTML = "";
-    document.getElementById("pin-retry")!.innerHTML = "";
-    document.getElementById("puk-retry")!.innerHTML = "";
-    document.getElementById("key-uid")!.innerHTML = "";
-    document.getElementById("key-path")!.innerHTML = "";
   }
 }

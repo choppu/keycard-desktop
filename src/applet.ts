@@ -4,17 +4,17 @@ import { ipcRenderer } from "electron";
 export namespace InstallApplet {
   export function install(): void {
     let filePath: string | undefined;
-    let fileField = document.getElementById("cap-file") as HTMLInputElement;
-    let fileLabel = document.getElementById("file-path-label");
-    let installWallet = document.getElementById("install-wallet-applet") as HTMLInputElement;
-    let installCash = document.getElementById("install-cash-applet") as HTMLInputElement;
-    let installNDEF = document.getElementById("install-ndef-applet") as HTMLInputElement;
-    let submitBtn = document.getElementById("reinstall-btn") as HTMLInputElement;
-    let cancelBtn = document.getElementById("reinstall-cancel") as HTMLInputElement;
+    const fileField = document.getElementById("cap-file") as HTMLInputElement;
+    const fileLabel = document.getElementById("file-path-label");
+    const installWallet = document.getElementById("install-wallet-applet") as HTMLInputElement;
+    const installCash = document.getElementById("install-cash-applet") as HTMLInputElement;
+    const installNDEF = document.getElementById("install-ndef-applet") as HTMLInputElement;
+    const submitBtn = document.getElementById("reinstall-btn") as HTMLInputElement;
+    const cancelBtn = document.getElementById("reinstall-cancel") as HTMLInputElement;
 
     fileField!.addEventListener("change", (e) => {
-      let target = e.target as HTMLInputElement;
-      filePath = target?.files![0] ? target.files[0].path : undefined;
+      const target = e.target as HTMLInputElement;
+      filePath = target?.files![0] ? target.files[0].name : undefined;
       fileLabel!.innerHTML = filePath ? filePath : "No file selected";
       filePath ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
       e.preventDefault();

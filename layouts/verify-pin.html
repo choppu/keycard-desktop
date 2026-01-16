@@ -1,22 +1,14 @@
-<section id="keycard__verify-pin-layout">
-  <div class="keycard__img-card-container">
-    <img src="./img/smartcard_verify.png" alt="Smartcard" class="keycard__img">
-  </div>
-  <p class="keycard__pairing-message">Please insert your pin. <span id="pin-retry-form"></span> tries left.</p>
-  <div class="keycard__pairing-input-container">
-    <div class="keycard__pairing-input-field group">
-      <label for="verify-pin" class="keycard__pairing-input-label">PIN</label>
-      <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="6" minlength="6"
-        maxlength="6" required placeholder="******">
+<section class="keycard__section" id="keycard__verify-pin-layout">
+    <div class="keycard__img-card-container">
+        <img src="./img/smartcard_verify.svg" alt="Smartcard" class="keycard__img">
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+    <p class="keycard__pairing-message">Please insert your pin. <span id="pin-retry-form"></span> tries left.</p>
+    <div class="keycard__pairing-input-field">
+        <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="6"
+            minlength="6" maxlength="6" required placeholder="&cir; &cir; &cir; &cir; &cir; &cir;">
+    </div>
     <div class="keycard__btn-container">
-      <input type="submit" id="verify-pin-btn" class="keycard__btn" value="Verify PIN" disabled="disabled">
-      <input type="button" id="verify-pin-cancel" class="keycard__btn" value="Cancel">
+        <input type="submit" id="verify-pin-btn" class="keycard__btn" value="Verify PIN" disabled="disabled">
+        <input type="button" id="verify-pin-cancel" class="keycard__btn" value="Cancel">
     </div>
-  </div>
 </section>

@@ -4,9 +4,26 @@ import { Pair } from "./pair";
 import { PUK } from "./puk";
 import { PIN } from "./pin";
 import { Key } from "./key";
-import { InstallApplet } from "./install-applet";
+import { InstallApplet } from "./applet";
+import { LockCard } from "./lock";
 
 const { ipcRenderer } = require('electron');
+const openSChannelBtn = document.getElementById("keycard-open-secure-channel") as HTMLButtonElement;
+const verifyPinBtn = document.getElementById("keycard-verify-pin") as HTMLButtonElement;
+const changePinBtn = document.getElementById("keycard-change-pin") as HTMLButtonElement;
+const changePukBtn = document.getElementById("keycard-change-puk") as HTMLButtonElement;
+const changePairingPassBtn = document.getElementById("keycard-change-pairing-pass") as HTMLButtonElement;
+const unpairBtn = document.getElementById("keycard-unpair") as HTMLButtonElement;
+const unpairOthersBtn = document.getElementById("keycard-unpair-oth") as HTMLButtonElement;
+const createMnemonicBtn = document.getElementById("keycard-create-mnemonic") as HTMLButtonElement;
+const loadMnemonicBtn = document.getElementById("keycard-load-mnemonic") as HTMLButtonElement;
+const changeWalletBtn = document.getElementById("keycard-chage-wall") as HTMLButtonElement;
+const exportKeyBtn = document.getElementById("keycard-export-key") as HTMLButtonElement;
+const removeKeyBtn = document.getElementById("keycard-remove-key") as HTMLButtonElement;
+const reinstallAppletBtn = document.getElementById("keycard-reinstall-applet") as HTMLButtonElement;
+const lockCardBtn = document.getElementById("keycard-lock") as HTMLButtonElement;  
+
+let isDefaultPairingPassword= true;
 
 export function updateLogMessage(event: string, msg: string): void {
   ipcRenderer.on(event, (_) => {
@@ -29,7 +46,7 @@ ipcRenderer.on('card-detected', (_, readerName, err?) => {
 });
 
 ipcRenderer.on("card-connection-err", (_, err) => {
-  UI.addMessageToLog(`Error connecting to the card: ${err}`);
+  UI.addMessageToLog(`${err}`);
 });
 
 ipcRenderer.on('card-need-initialization', (_) => {
@@ -38,7 +55,12 @@ ipcRenderer.on('card-need-initialization', (_) => {
 
 ipcRenderer.on("pairing-needed", (_) => {
   UI.addMessageToLog("No pairing found");
-  UI.loadFragment('pairing.html', Pair.pair);
+  if (isDefaultPairingPassword) {
+    isDefaultPairingPassword = false;
+    ipcRenderer.send("pairing-pass-submitted", "KeycardDefaultPairing");
+  } else {
+    UI.loadFragment('pairing.html', Pair.pair);
+  }
 })
 
 ipcRenderer.on("application-info", function (_, sessionInfo) {
@@ -47,14 +69,14 @@ ipcRenderer.on("application-info", function (_, sessionInfo) {
     UI.renderAppInfo(sessionInfo);
 
     if (sessionInfo.pinVerified && sessionInfo.hasMasterKey) {
-      UI.enableCmdButton(document.getElementById("keycard-chage-wall")!);
-      UI.enableCmdButton(document.getElementById("keycard-export-key")!);
+      UI.enableCmdButton(changeWalletBtn);
+      UI.enableCmdButton(exportKeyBtn);
     } else {
-      UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
-      UI.disableCmdButton(document.getElementById("keycard-export-key")!);
+      UI.disableCmdButton(changeWalletBtn);
+      UI.disableCmdButton(exportKeyBtn);
     }
   } else {
-    UI.renderNoAppInfo();
+    UI.renderAppInfo();
   }
 });
 
@@ -80,28 +102,30 @@ ipcRenderer.on('pin-verification-failed', (_, msg) => {
 });
 
 ipcRenderer.on("enable-open-secure-channel", (_) => {
-  UI.enableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+  UI.enableCmdButton(openSChannelBtn);
 });
 
-ipcRenderer.on("enable-reinstall-applet", (_) => {
-  UI.enableCmdButton(document.getElementById("keycard-reinstall-applet")!);
+ipcRenderer.on("enable-applet-cmds", (_) => {
+  UI.enableCmdButton(reinstallAppletBtn);
+  UI.enableCmdButton(lockCardBtn);
 });
 
 ipcRenderer.on("disable-open-secure-channel", (_) => {
-  UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
+  UI.disableCmdButton(openSChannelBtn);
 });
 
 ipcRenderer.on("enable-pin-verification", (_) => {
-  UI.enableCmdButton(document.getElementById("keycard-verify-pin")!);
+  UI.enableCmdButton(verifyPinBtn);
 });
 
 ipcRenderer.on("disable-cmds", (_) => {
   UI.disableCmdBtns();
-  UI.disableCmdButton(document.getElementById("keycard-verify-pin")!);
-  UI.disableCmdButton(document.getElementById("keycard-open-secure-channel")!);
-  UI.disableCmdButton(document.getElementById("keycard-reinstall-applet")!);
-  UI.disableCmdButton(document.getElementById("keycard-chage-wall")!);
-  UI.disableCmdButton(document.getElementById("keycard-export-key")!);
+  UI.disableCmdButton(verifyPinBtn);
+  UI.disableCmdButton(openSChannelBtn);
+  UI.disableCmdButton(reinstallAppletBtn);
+  UI.disableCmdButton(changeWalletBtn);
+  UI.disableCmdButton(exportKeyBtn);
+  UI.disableCmdButton(lockCardBtn)
 });
 
 ipcRenderer.on('mnemonic-created', (_, wordList) => {
@@ -142,6 +166,11 @@ ipcRenderer.on('applet-installed', (_) => {
   UI.addMessageToLog("Applet installed");
 });
 
+ipcRenderer.on('card-locked', (_) => {
+  UI.unloadFragment();
+  UI.addMessageToLog("Keycard locked");
+});
+
 updateLogMessage('card-connected', "Selecting Keycard Wallet");
 updateLogMessage('pairing-found', "Pairing found");
 updateLogMessage('secure-channel', "Secure Channel opened");
@@ -153,18 +182,19 @@ updateLogMessage('puk-changed', "PUK updated");
 updateLogMessage('pairing-changed', "Pairing Password updated");
 updateLogMessage('mnemonic-loaded', "Mnemonic loaded");
 
-UI.renderVerifyPinLayout(document.getElementById("keycard-verify-pin")!, 'verify-pin.html', 'verify-puk.html', PIN.verifyPIN, PUK.verifyPUK);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-pin")!, 'change-pin.html', PIN.changePIN);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-puk")!, 'change-puk.html', PUK.changePUK);
-UI.renderCmdScreenLayout(document.getElementById("keycard-change-pairing-pass")!, 'change-pairing.html', Pair.changePairingPassword);
-UI.renderCmdScreenLayout(document.getElementById("keycard-unpair")!, 'unpair.html', Pair.unpair);
-UI.renderCmdScreenLayout(document.getElementById("keycard-unpair-oth")!, 'unpair.html', Pair.unpairOtherClients);
-UI.renderCmdScreenLayout(document.getElementById("keycard-create-mnemonic")!, 'waiting.html', Key.createMnemonic);
-UI.renderCmdScreenLayout(document.getElementById("keycard-load-mnemonic")!, 'load-mnemonic.html', Key.loadMnemonic);
-UI.renderCmdScreenLayout(document.getElementById("keycard-chage-wall")!, 'change-wallet.html', Key.changeWallet);
-UI.renderCmdScreenLayout(document.getElementById("keycard-export-key")!, 'waiting.html', Key.exportKey);
-UI.renderCmdScreenLayout(document.getElementById("keycard-remove-key")!, 'remove-key.html', Key.removeKey);
-UI.renderCmdScreenLayout(document.getElementById("keycard-reinstall-applet")!, 'reinstall.html', InstallApplet.install);
+UI.renderCmdScreenLayout(verifyPinBtn, PIN.verifyPIN, PUK.verifyPUK);
+UI.renderCmdScreenLayout(changePinBtn, PIN.changePIN);
+UI.renderCmdScreenLayout(changePukBtn, PUK.changePUK);
+UI.renderCmdScreenLayout(changePairingPassBtn, Pair.changePairingPassword);
+UI.renderCmdScreenLayout(unpairBtn, Pair.unpair);
+UI.renderCmdScreenLayout(unpairOthersBtn, Pair.unpairOtherClients);
+UI.renderCmdScreenLayout(createMnemonicBtn, Key.createMnemonic);
+UI.renderCmdScreenLayout(loadMnemonicBtn, Key.loadMnemonic);
+UI.renderCmdScreenLayout(changeWalletBtn, Key.changeWallet);
+UI.renderCmdScreenLayout(exportKeyBtn, Key.exportKey);
+UI.renderCmdScreenLayout(removeKeyBtn, Key.removeKey);
+UI.renderCmdScreenLayout(reinstallAppletBtn, InstallApplet.install);
+UI.renderCmdScreenLayout(lockCardBtn, LockCard.lock);    
 
 document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {
   ipcRenderer.send("open-secure-channel");

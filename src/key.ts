@@ -1,8 +1,8 @@
 import { ipcRenderer, shell } from "electron";
 import { UI } from "./ui";
-import { KeyPath } from "keycard-sdk/dist/key-path";
+import { KeyPath } from "keycard-sdk/dist/key-path.js";
+import bip39 from 'bip39';
 
-const bip39 = require('bip39');
 const QRCode = require('qrcode');
 const ethScanAddr = 'https://etherscan.io/address/';
 
@@ -13,21 +13,21 @@ export namespace Key {
   }
 
   export function renderMnemonicWordlist(wordList: string): void {
-    let wordListContainer = document.getElementById("wordlist-container");
-    let btn = document.getElementById("wordlist-ok") as HTMLInputElement;
+    const wordListContainer = document.getElementById("wordlist-container") as HTMLParagraphElement;
+    const btn = document.getElementById("wordlist-ok") as HTMLInputElement;
 
-    wordListContainer!.innerHTML = wordList;
+    wordListContainer.innerHTML = wordList;
 
-    btn!.addEventListener("click", (e) => {
+    btn.addEventListener("click", (e) => {
       UI.unloadFragment();
       e.preventDefault();
     });
   }
 
   export function loadMnemonic(): void {
-    let mnemonicPhraseField = document.getElementById("load-mnemonic-inp") as HTMLTextAreaElement;
-    let submitBtn = document.getElementById("load-mnemonic-btn") as HTMLInputElement;
-    let cancelBtn = document.getElementById("load-mnemonic-cancel") as HTMLInputElement;
+    const mnemonicPhraseField = document.getElementById("load-mnemonic-inp") as HTMLTextAreaElement;
+    const submitBtn = document.getElementById("load-mnemonic-btn") as HTMLInputElement;
+    const cancelBtn = document.getElementById("load-mnemonic-cancel") as HTMLInputElement;
     let mnemonic: string;
 
     mnemonicPhraseField.addEventListener("input", (e) => {
@@ -36,13 +36,13 @@ export namespace Key {
       e.preventDefault();
     });
 
-    submitBtn?.addEventListener("click", (e) => {
+    submitBtn.addEventListener("click", (e) => {
       ipcRenderer.send("load-mnemonic", mnemonic);
       UI.unloadFragment();
       e.preventDefault();
     });
 
-    cancelBtn?.addEventListener("click", (e) => {
+    cancelBtn.addEventListener("click", (e) => {
       mnemonicPhraseField.value = "";
       UI.unloadFragment();
       e.preventDefault;
@@ -50,9 +50,9 @@ export namespace Key {
   }
 
   export function changeWallet(): void {
-    let walletPath = document.getElementById("change-wallet-path") as HTMLInputElement;
-    let submitBtn = document.getElementById("change-wallet-path-btn") as HTMLInputElement;
-    let cancelBtn = document.getElementById("change-wallet-path-cancel") as HTMLInputElement;
+    const walletPath = document.getElementById("change-wallet-path") as HTMLInputElement;
+    const submitBtn = document.getElementById("change-wallet-path-btn") as HTMLInputElement;
+    const cancelBtn = document.getElementById("change-wallet-path-cancel") as HTMLInputElement;
 
     walletPath.addEventListener("input", (e) => {
       if (walletPath.value == "") {
@@ -84,16 +84,16 @@ export namespace Key {
   }
 
   export function exportKey(): void {
-    document.getElementById("waiting-message")!.innerHTML = "Reading Wallet Address. Please don't disconnect your card.";
+    document.getElementById("waiting-message")!.innerHTML = "Hello. Reading Wallet Address. Please don't disconnect your card.";
     ipcRenderer.send("export-key");
   }
 
   export function generateExportKeyData(pubKey: string, ethAddress: string): void {
-    let qrCode = document.getElementById("eth-addr-canvas");
-    let pubKeyField = document.getElementById("wallet-public-key");
-    let ethScanLink = document.getElementById("wallet-key-link") as HTMLAnchorElement;
-    let ethAddressField = document.getElementById("wallet-eth-address");
-    let btn = document.getElementById("export-key-ok");
+    const qrCode = document.getElementById("eth-addr-canvas") as HTMLCanvasElement;
+    const pubKeyField = document.getElementById("wallet-public-key") as HTMLParagraphElement;
+    const ethScanLink = document.getElementById("wallet-key-link") as HTMLAnchorElement;
+    const ethAddressField = document.getElementById("wallet-eth-address") as HTMLSpanElement;
+    const btn = document.getElementById("export-key-ok") as HTMLInputElement;
 
     QRCode.toCanvas(qrCode, `ethereum:${ethAddress}`, {
       width: 300,
@@ -101,24 +101,24 @@ export namespace Key {
       errorCorrectionLevel: 'H'
     });
 
-    pubKeyField!.innerHTML = pubKey;
-    ethScanLink!.href = ethScanAddr + ethAddress;
-    ethAddressField!.innerHTML = ethAddress;
+    pubKeyField.innerHTML = pubKey;
+    ethScanLink.href = ethScanAddr + ethAddress;
+    ethAddressField.innerHTML = ethAddress;
 
     ethScanLink.addEventListener("click", (e) => {
       shell.openExternal(ethScanLink.href);
       e.preventDefault();
     });
 
-    btn!.addEventListener("click", (e) => {
+    btn.addEventListener("click", (e) => {
       UI.unloadFragment();
       e.preventDefault();
     });
   }
 
   export function removeKey(): void {
-    let submitBtn = document.getElementById("remove-btn") as HTMLInputElement;
-    let cancelBtn = document.getElementById("remove-cancel") as HTMLInputElement;
+    const submitBtn = document.getElementById("remove-btn") as HTMLInputElement;
+    const cancelBtn = document.getElementById("remove-cancel") as HTMLInputElement;
 
     submitBtn.addEventListener("click", (e) => {
       ipcRenderer.send('remove-key');

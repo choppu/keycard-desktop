@@ -1,28 +1,30 @@
 import Keycard from "keycard-sdk"
-import { WebContents } from "electron";
+import { IpcMainEvent, WebContents } from "electron";
+import Store from 'electron-store';
 import { InitializationData } from "./initialization-data"
 import { ipcMain } from "electron"
 import { SessionInfo } from "./session-info";
 import { Utils } from "./utils";
-import { Pairing } from "keycard-sdk/dist/pairing";
-import { Commandset } from "keycard-sdk/dist/commandset";
-import { Mnemonic } from "keycard-sdk/dist/mnemonic";
-import { Constants } from "keycard-sdk/dist/constants";
-import { KeyPath } from "keycard-sdk/dist/key-path";
-import { BIP32KeyPair } from "keycard-sdk/dist/bip32key";
-import { CardChannel } from "keycard-sdk/dist/card-channel";
-import { CashCommandset } from "keycard-sdk/dist/cash-commandset";
-import { CashApplicationInfo } from "keycard-sdk/dist/cash-application-info";
-import { Ethereum } from "keycard-sdk/dist/ethereum";
-import { GlobalPlatformCommandset } from "keycard-sdk/dist/global-platform-commandset"
-
-const pcsclite = require("@pokusew/pcsclite");
-const Store = require('electron-store');
-const fs = require("fs");
+import { Pairing } from "keycard-sdk/dist/pairing.js";
+import { Commandset } from "keycard-sdk/dist/commandset.js";
+import { Mnemonic } from "keycard-sdk/dist/mnemonic.js";
+import { Constants } from "keycard-sdk/dist/constants.js";
+import { KeyPath } from "keycard-sdk/dist/key-path.js";
+import { BIP32KeyPair } from "keycard-sdk/dist/bip32key.js";
+import { CardChannel } from "keycard-sdk/dist/card-channel.js";
+import { CashCommandset } from "keycard-sdk/dist/cash-commandset.js";
+import { CashApplicationInfo } from "keycard-sdk/dist/cash-application-info.js";
+import { Ethereum } from "keycard-sdk/dist/ethereum.js";
+import { GlobalPlatformCommandset } from "keycard-sdk/dist/global-platform-commandset.js"
+import { CardReader } from "@nonth/pcsclite";
+import pcsclite from '@nonth/pcsclite';
+import fs from "fs";
+import { CryptoUtils } from "keycard-sdk/dist/crypto-utils";
+import { APDUCommand } from "keycard-sdk/dist/apdu-command";
 
 const maxPINRetryCount = 3;
 const maxPUKRetryCount = 5;
-const maxPairing = 5;
+const maxPairing = 100;
 
 export class Card {
   window: WebContents;
@@ -57,16 +59,16 @@ export class Card {
   async refreshConnection(): Promise<void> {
     await this.getCashAppletData();
     await this.openSecureChannel();
-    this.window.send("enable-reinstall-applet");
+    this.window.send("enable-applet-cmds");
   }
 
-  async connectCard(reader: any, protocol: number): Promise<void> {
+  async connectCard(reader: CardReader, protocol: number): Promise<void> {
     try {
       this.channel = new Keycard.PCSCCardChannel(reader, protocol);
       this.cmdSet = new Keycard.Commandset(this.channel);
       this.window.send('card-connected');
       await this.refreshConnection();
-    } catch (err) {
+    } catch (err: any) {
       if (err.sw == 0x6a82) {
         this.window.send("card-exceptions", "Error: Keycard Applet not installed");
       } else {
@@ -76,20 +78,23 @@ export class Card {
   }
 
   async getCashAppletData(): Promise<void> {
-    let cashCmdSet = new CashCommandset(this.channel!);
-    try {
-      let data = new CashApplicationInfo((await cashCmdSet.select()).checkOK().data);
-      this.sessionInfo.cashAddress = '0x' + Utils.hx(Ethereum.toEthereumAddress(data.pubKey));
-    } catch (err) {
-      this.sessionInfo.cashAddress = "Not installed";
-    }
+    if(this.channel) {
+      let cashCmdSet = new CashCommandset(this.channel);
+      try {
+        let data = new CashApplicationInfo((await cashCmdSet.select()).checkOK().data);
+        this.sessionInfo.cashAddress = '0x' + Utils.hx(Ethereum.toEthereumAddress(data.pubKey));
+      } catch (err: any) {
+        this.sessionInfo.cashAddress = "Not installed";
+        this.window.send("card-exceptions", err.message);
+      }
+    } 
   }
 
   async openSecureChannel(): Promise<void> {
     (await this.cmdSet!.select()).checkOK();
 
     while (!this.sessionInfo.secureChannelOpened) {
-      if (this.cmdSet!.applicationInfo.initializedCard == false) {
+      if (this.cmdSet!.applicationInfo!.initializedCard == false) {
         await this.initializeCard();
       } else {
         try {
@@ -100,13 +105,12 @@ export class Card {
           continue;
         }
       }
-
       try {
         await this.cmdSet!.autoOpenSecureChannel();
         this.window.send("secure-channel");
         this.sessionInfo.secureChannelOpened = true;
-      } catch (err) {
-        this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
+      } catch (err: any) {
+        this.deletePairing(this.cmdSet!.applicationInfo!.instanceUID!);
       }
     }
 
@@ -117,14 +121,18 @@ export class Card {
   initializeCard(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.window.send('card-need-initialization');
-      ipcMain.once('initialization-data-submitted', async (event, data: InitializationData) => {
-        (await this.cmdSet!.init(data.pin, data.puk, data.pairingPassword)).checkOK();
-        (await this.cmdSet!.select()).checkOK();
-        await this.cmdSet!.autoPair(data.pairingPassword);
-        (await this.cmdSet!.select()).checkOK();
-        this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
-        event.reply("card-initialization", data);
-        this.window.send("paired");
+      ipcMain.once('initialization-data-submitted', async (event: IpcMainEvent, data: InitializationData) => {
+        if(this.cmdSet) {
+          (await this.cmdSet.init(data.pin, data.puk, data.pairingPassword)).checkOK();
+          (await this.cmdSet.select()).checkOK();
+          await this.cmdSet.autoPair(data.pairingPassword);
+          (await this.cmdSet.select()).checkOK();
+          this.savePairing(this.cmdSet!.applicationInfo!.instanceUID!, this.cmdSet.getPairing().toBase64());
+          event.reply("card-initialization", data);
+          this.window.send("paired");
+        } else {
+            reject("Error: Card initialization failed");
+        }
         resolve();
       });
     })
@@ -133,7 +141,8 @@ export class Card {
   pairCard(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let pairingInfo: string;
-      let instanceUID = this.cmdSet!.applicationInfo.instanceUID;
+      let instanceUID = this.cmdSet!.applicationInfo!.instanceUID;
+
 
       if (this.isPaired(instanceUID)) {
         pairingInfo = this.loadPairing(instanceUID);
@@ -146,16 +155,15 @@ export class Card {
           if (pairingPassword) {
             try {
               await this.cmdSet!.autoPair(pairingPassword);
-            } catch {
-              reject("Error: invalid password");
+            } catch(err: any) {
+              reject("Error: Invalid password");
               return;
             }
             (await this.cmdSet!.select()).checkOK();
-            this.savePairing(this.cmdSet!.applicationInfo.instanceUID, this.cmdSet!.getPairing().toBase64());
+            this.savePairing(this.cmdSet!.applicationInfo!.instanceUID!, this.cmdSet!.getPairing().toBase64());
             this.window.send("paired");
             resolve(true);
           } else {
-            this.displayUnpairedData();
             resolve(false);
           }
         });
@@ -167,7 +175,7 @@ export class Card {
     let status = new Keycard.ApplicationStatus((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_APPLICATION)).checkOK().data);
     let path = new KeyPath((await this.cmdSet!.getStatus(Keycard.Constants.GET_STATUS_P1_KEY_PATH)).checkOK().data);
     this.sessionInfo.keyPath = path.toString();
-    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo);
+    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo!);
     this.sessionInfo.setApplicationStatus(status);
     this.window.send('application-info', this.sessionInfo);
     this.window.send("enable-pin-verification");
@@ -175,7 +183,7 @@ export class Card {
 
   displayUnpairedData(): void {
     this.sessionInfo.keyPath = "No data available";
-    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo);
+    this.sessionInfo.setApplicationInfo(this.cmdSet!.applicationInfo!);
     this.window.send('application-info', this.sessionInfo);
     this.window.send("enable-open-secure-channel");
   }
@@ -187,7 +195,7 @@ export class Card {
       this.sessionInfo.pinVerified = true;
       this.window.send('application-info', this.sessionInfo);
       this.window.send("pin-verified");
-    } catch (err) {
+    } catch (err: any) {
       if (err.retryAttempts != undefined) {
         this.sessionInfo.pinRetry = err.retryAttempts;
         this.window.send('application-info', this.sessionInfo);
@@ -216,7 +224,7 @@ export class Card {
     } catch (err) {
       this.sessionInfo.pukRetry = (typeof this.sessionInfo.pukRetry == "number") ? (this.sessionInfo.pukRetry--) : this.sessionInfo.pukRetry;
       this.window.send('application-info', this.sessionInfo);
-      if (this.sessionInfo.pukRetry > 0) {
+      if (this.sessionInfo.pukRetry as number > 0) {
         this.window.send("puk-screen-needed");
       } else {
         this.window.send("unblock-pin-failed");
@@ -241,7 +249,7 @@ export class Card {
 
   async unpairCard(): Promise<void> {
     await this.cmdSet!.autoUnpair();
-    this.deletePairing(this.cmdSet!.applicationInfo.instanceUID);
+    this.deletePairing(this.cmdSet!.applicationInfo!.instanceUID);
     this.window.send('card-unpaired');
   }
 
@@ -254,10 +262,10 @@ export class Card {
 
   async createMnemonic(): Promise<void> {
     let resp = (await this.cmdSet!.generateMnemonic(Constants.GENERATE_MNEMONIC_12_WORDS)).checkOK().data;
-    let mnemonicPhrase = new Mnemonic(resp);
+    let mnemonicPhrase = new Mnemonic(resp!);
     mnemonicPhrase.fetchBIP39EnglishWordlist();
     let keyUID = (await this.cmdSet!.loadBIP32KeyPair(mnemonicPhrase.toBIP32KeyPair())).checkOK().data;
-    this.sessionInfo.keyUID = Utils.hx(keyUID);
+    this.sessionInfo.keyUID = Utils.hx(keyUID!);
     this.sessionInfo.hasMasterKey = true;
     this.sessionInfo.keyPath = 'm';
     this.window.send('application-info', this.sessionInfo);
@@ -265,13 +273,15 @@ export class Card {
   }
 
   async loadMnemonic(mnemonic: string): Promise<void> {
-    let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonic));
-    let keyUID = (await this.cmdSet!.loadBIP32KeyPair(keyPair)).checkOK().data;
-    this.sessionInfo.keyUID = Utils.hx(keyUID);
-    this.sessionInfo.hasMasterKey = true;
-    this.sessionInfo.keyPath = 'm';
-    this.window.send('application-info', this.sessionInfo);
-    this.window.send('mnemonic-loaded');
+    if(this.cmdSet) {
+      let keyPair = BIP32KeyPair.fromBinarySeed(Mnemonic.toBinarySeed(mnemonic));
+      let keyUID = (await this.cmdSet.loadBIP32KeyPair(keyPair)).checkOK().data;
+      this.sessionInfo.keyUID = Utils.hx(keyUID);
+      this.sessionInfo.hasMasterKey = true;
+      this.sessionInfo.keyPath = 'm';
+      this.window.send('application-info', this.sessionInfo);
+      this.window.send('mnemonic-loaded');  
+    } 
   }
 
   async changeWallet(wallet: string): Promise<void> {
@@ -283,9 +293,9 @@ export class Card {
 
   async exportKey(): Promise<void> {
     let data = (await this.cmdSet!.exportCurrentKey(true)).checkOK().data;
-    let key = BIP32KeyPair.fromTLV(data);
+    let key = BIP32KeyPair.fromTLV(data!);
     let ethAddress = key.toEthereumAddress();
-    this.window.send("key-exported", '0x' + Utils.hx(key.publicKey), '0x' + Utils.hx(ethAddress));
+    this.window.send("key-exported", '0x' + Utils.hx(key.publicKey!), '0x' + Utils.hx(ethAddress));
   }
 
   async removeKey(): Promise<void> {
@@ -294,21 +304,20 @@ export class Card {
     this.sessionInfo.keyPath = 'm';
     this.window.send('application-info', this.sessionInfo);
     this.window.send('key-removed');
-
   }
 
   async installApplet(path: string, installWallet: boolean, installCash: boolean, installNDEF: boolean): Promise<void> {
-    let cap = fs.readFileSync(path);
-    let gpCmdSet = new GlobalPlatformCommandset(this.channel!);
+    const cap = fs.readFileSync(path);
+    const gpCmdSet = new GlobalPlatformCommandset(this.channel!);
 
     (await gpCmdSet.select()).checkOK();
     await gpCmdSet.openSecureChannel();
 
-    this.window.send("applet-inst-progress", "Deleting the old instances and package");
+    this.window.send("applet-inst-progress", "Deleting the old instances and package...");
     await gpCmdSet.deleteKeycardInstancesAndPackage();
 
-    this.window.send("applet-inst-progress", "Loading the new package");
-    (await gpCmdSet.loadKeycardPackage(cap, (loadedBlock, blockCount) => {
+    this.window.send("applet-inst-progress", "Loading the new package...");
+    (await gpCmdSet.loadKeycardPackage(cap, (loadedBlock: number, blockCount: number) => {
       this.window.send("applet-inst-progress", "Loaded block " + loadedBlock + "/" + blockCount);
     }));
 
@@ -333,6 +342,27 @@ export class Card {
     await this.refreshConnection();
   }
 
+  async lockCard(): Promise<void> {
+      const gpCmdSet = new GlobalPlatformCommandset(this.channel!);
+      
+      (await gpCmdSet.select()).checkOK();
+      await gpCmdSet.openSecureChannel();
+
+      const encKey = CryptoUtils.getRandomBytes(16);
+      const macKey = CryptoUtils.getRandomBytes(16);
+      const decKey = CryptoUtils.getRandomBytes(16);
+
+      (await gpCmdSet.putSCP02Keys(0, 1, encKey, macKey, decKey)).checkOK();
+      
+      let cmd = new APDUCommand(0x84, 0xf0, 0x80, 0x07, new Uint8Array(0));
+      (await gpCmdSet.secureChannel.send(cmd)).checkSW([0x9000, 0x6985]);
+
+      cmd = new APDUCommand(0x84, 0xf0, 0x80, 0x0f, new Uint8Array(0));
+      (await gpCmdSet.secureChannel.send(cmd)).checkSW([0x9000, 0x6985]);
+
+      this.window.send('card-locked');
+  }
+
   resetConnection(): void {
     this.sessionInfo.reset();
     this.window.send("application-info", this.sessionInfo);
@@ -343,7 +373,7 @@ export class Card {
     let pcsc = pcsclite();
     let card = this;
 
-    pcsc.on('reader', (reader: any) => {
+    pcsc.on('reader', (reader: CardReader) => {
       card.window.send('card-detected', reader.name);
 
       reader.on('error', function (err: Error) {
@@ -361,9 +391,8 @@ export class Card {
           if (card.sessionInfo.cardConnected) {
             card.window.send('card-removed', reader.name);
             card.resetConnection();
-            reader.disconnect(reader.SCARD_LEAVE_CARD, (_: Error) => { });
+            reader.disconnect(reader.SCARD_LEAVE_CARD, (err: any) => {});
           }
-
         } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
           reader.connect({ share_mode: reader.SCARD_SHARE_EXCLUSIVE }, async function (err: Error, protocol: number) {
             card.sessionInfo.cardConnected = true;
@@ -385,18 +414,18 @@ export class Card {
     });
   }
 
-  withErrorHandler(fn: (...args: any) => Promise<void>): (ev: Event) => void {
-    return async (_: Event, ...args: any) => {
+  withErrorHandler(fn: (...args: any) => Promise<void>): (ev: IpcMainEvent) => void {
+    return async (_: IpcMainEvent, ...args: any) => {
       try {
         await fn.call(this, ...args);
-      } catch (err) {
+      } catch (err: any) {
         this.window.send("card-exceptions", err.message);
       }
     }
   }
 
   installEventHandlers(): void {
-    ipcMain.on("open-secure-channel", this.withErrorHandler(this.openSecureChannel));
+    ipcMain.on("open-secure-channel", this.withErrorHandler(this.openSecureChannel) as any);
     ipcMain.on("verify-pin", this.withErrorHandler(this.verifyPIN));
     ipcMain.on("verify-puk", this.withErrorHandler(this.verifyPUK));
     ipcMain.on("change-pin", this.withErrorHandler(this.changePIN));
@@ -410,5 +439,6 @@ export class Card {
     ipcMain.on("export-key", this.withErrorHandler(this.exportKey));
     ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
     ipcMain.on("install-applet", this.withErrorHandler(this.installApplet));
+    ipcMain.on("lock-card", this.withErrorHandler(this.lockCard));
   }
 }
