@@ -6,6 +6,12 @@
       "strict": true,
       "esModuleInterop": true,
       "outDir": "./out",
-      "rootDir": "./src"
+      "rootDir": "./src",
+      "pretty": true,
+      "skipLibCheck": true,
+      "noImplicitReturns": true,
+      "noUncheckedIndexedAccess": false,
+      "noUnusedLocals": true,
+      "downlevelIteration": true
   }
 }

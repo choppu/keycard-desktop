@@ -5,7 +5,7 @@
     <p class="keycard__pairing-message">Please insert your pin. <span id="pin-retry-form"></span> tries left.</p>
     <div class="keycard__pairing-input-field">
         <input type="password" id="verify-pin-inp" class="keycard__pairing-input" name="verify-pin" size="6"
-            minlength="6" maxlength="6" required placeholder="&cir; &cir; &cir; &cir; &cir; &cir;">
+            minlength="6" maxlength="6" required placeholder="&cir; &cir; &cir; &cir; &cir; &cir;" pattern= "[0-9]">
     </div>
     <div class="keycard__btn-container">
         <input type="submit" id="verify-pin-btn" class="keycard__btn" value="Verify PIN" disabled="disabled">

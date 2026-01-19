@@ -11,24 +11,30 @@ import { Mnemonic } from "keycard-sdk/dist/mnemonic.js";
 import { Constants } from "keycard-sdk/dist/constants.js";
 import { KeyPath } from "keycard-sdk/dist/key-path.js";
 import { BIP32KeyPair } from "keycard-sdk/dist/bip32key.js";
-import { CardChannel } from "keycard-sdk/dist/card-channel.js";
 import { CashCommandset } from "keycard-sdk/dist/cash-commandset.js";
 import { CashApplicationInfo } from "keycard-sdk/dist/cash-application-info.js";
 import { Ethereum } from "keycard-sdk/dist/ethereum.js";
 import { GlobalPlatformCommandset } from "keycard-sdk/dist/global-platform-commandset.js"
-import { CardReader } from "@nonth/pcsclite";
-import pcsclite from '@nonth/pcsclite';
-import fs from "fs";
+import pcsclite, { CardReader, PCSCLite } from "@nonth/pcsclite";
 import { CryptoUtils } from "keycard-sdk/dist/crypto-utils";
 import { APDUCommand } from "keycard-sdk/dist/apdu-command";
+import { PCSCCardChannel } from "keycard-sdk/dist/pcsc-card-channel";
 
 const maxPINRetryCount = 3;
 const maxPUKRetryCount = 5;
 const maxPairing = 100;
 
+export type AppletInstallOpts = {
+    installWallet?: boolean, 
+    installCash?: boolean, 
+    installNDEF?: boolean,
+    installIdentApplet?: boolean
+}
+
 export class Card {
   window: WebContents;
-  channel?: CardChannel;
+  pcsc?: PCSCLite;
+  channel?: PCSCCardChannel;
   cmdSet?: Commandset;
   sessionInfo: SessionInfo;
   pairingStore: any;
@@ -71,6 +77,7 @@ export class Card {
     } catch (err: any) {
       if (err.sw == 0x6a82) {
         this.window.send("card-exceptions", "Error: Keycard Applet not installed");
+        this.window.send("enable-install-applet");
       } else {
         this.window.send("card-exceptions", err.message);
       }
@@ -306,34 +313,38 @@ export class Card {
     this.window.send('key-removed');
   }
 
-  async installApplet(path: string, installWallet: boolean, installCash: boolean, installNDEF: boolean): Promise<void> {
-    const cap = fs.readFileSync(path);
+  async installApplet(cap: ArrayBuffer, opts: AppletInstallOpts): Promise<void> {
     const gpCmdSet = new GlobalPlatformCommandset(this.channel!);
 
     (await gpCmdSet.select()).checkOK();
-    await gpCmdSet.openSecureChannel();
+    await gpCmdSet.openSecureChannel(false);
 
     this.window.send("applet-inst-progress", "Deleting the old instances and package...");
     await gpCmdSet.deleteKeycardInstancesAndPackage();
 
     this.window.send("applet-inst-progress", "Loading the new package...");
-    (await gpCmdSet.loadKeycardPackage(cap, (loadedBlock: number, blockCount: number) => {
+    (await gpCmdSet.loadKeycardPackage(new Uint8Array(cap), (loadedBlock: number, blockCount: number) => {
       this.window.send("applet-inst-progress", "Loaded block " + loadedBlock + "/" + blockCount);
     }));
 
-    if (installWallet) {
+    if (opts.installWallet) {
       this.window.send("applet-inst-progress", "Installing the Keycard Applet");
       (await gpCmdSet.installKeycardApplet()).checkOK();
     }
 
-    if (installCash) {
+    if (opts.installCash) {
       this.window.send("applet-inst-progress", "Installing the Cash Applet");
       (await gpCmdSet.installCashApplet()).checkOK();
     }
 
-    if (installNDEF) {
+    if (opts.installNDEF) {
       this.window.send("applet-inst-progress", "Installing the NDEF Applet");
       (await gpCmdSet.installNDEFApplet(new Uint8Array(0))).checkOK();
+    }
+
+    if (opts.installIdentApplet) {
+      this.window.send("applet-inst-progress", "Installing the Identifier Applet");
+      (await gpCmdSet.installIdentApplet()).checkOK();
     }
 
     this.window.send('applet-installed');
@@ -370,10 +381,11 @@ export class Card {
   }
 
   start(): void {
-    let pcsc = pcsclite();
+    this.pcsc = pcsclite();
     let card = this;
 
-    pcsc.on('reader', (reader: CardReader) => {
+
+    this.pcsc.on('reader', (reader: CardReader) => {
       card.window.send('card-detected', reader.name);
 
       reader.on('error', function (err: Error) {
@@ -400,7 +412,7 @@ export class Card {
               card.window.send('card-connection-err', err.message);
               return;
             }
-            card.connectCard(reader, protocol);
+            await card.connectCard(reader, protocol);
           });
         }
       });
@@ -414,12 +426,19 @@ export class Card {
     });
   }
 
+  disconnect() {
+    this.channel?.cardChannel.disconnect(this.channel?.cardChannel.SCARD_LEAVE_CARD, (_: any) => {});
+    this.channel?.cardChannel.removeAllListeners();
+    this.channel?.cardChannel.close();
+    this.pcsc?.close();
+  }
+
   withErrorHandler(fn: (...args: any) => Promise<void>): (ev: IpcMainEvent) => void {
     return async (_: IpcMainEvent, ...args: any) => {
       try {
         await fn.call(this, ...args);
       } catch (err: any) {
-        this.window.send("card-exceptions", err.message);
+        this.window.send("card-exceptions", `${err} ${err.message}`);
       }
     }
   }

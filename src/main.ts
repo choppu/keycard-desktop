@@ -7,10 +7,11 @@ export namespace Main {
   let card: Card;
 
   export function onWindowAllClosed() {
-    application.quit();
+    if (process.platform !== 'darwin') application.quit();
   }
 
   export function onClose(): void {
+    card.disconnect();
     mainWindow.destroy();
   }
 

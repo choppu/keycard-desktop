@@ -5,13 +5,13 @@
   <p class="keycard__pairing-message">Insert new PIN</p>
   <div class="keycard__pairing-input-field">
     <input type="password" id="change-pin" class="keycard__pairing-input keycard__change-pin-el" name="change-pin"
-      size="6" minlength="6" maxlength="6" required placeholder="&cir; &cir; &cir; &cir; &cir; &cir;">
+      size="6" minlength="6" maxlength="6" required placeholder="&cir; &cir; &cir; &cir; &cir; &cir;" pattern= "[0-9]">
   </div>
   <p class="keycard__pairing-message">Repeat PIN</p>
   <div class="keycard__pairing-input-field">
     <input type="password" id="repeat-change-pin" class="keycard__pairing-input keycard__change-pin-el"
       name="repeat-change-pin" size="6" minlength="6" maxlength="6" required
-      placeholder="&cir; &cir; &cir; &cir; &cir; &cir;">
+      placeholder="&cir; &cir; &cir; &cir; &cir; &cir;" pattern= "[0-9]">
   </div>
   <div class="keycard__btn-container">
     <input type="submit" id="change-pin-btn" class="keycard__btn" value="Change PIN" disabled="disabled">

@@ -51,7 +51,7 @@
     text-align: left;
     font-size: var(--text-small);
     color: var(--terminal-green);
-    overflow: auto;
+    overflow-y: scroll;
     background-color: var(--white-4);
 }
 
@@ -255,17 +255,28 @@
 }
 
 .keycard__init-data-container {
-    width: 60%;
-    margin: 2em auto;
+    width: 400px;
     font-size: var(--text-medium);
     color: var(--white-95);
-    text-align: left;
+    background-color: var(--white-4);
+    border-radius: var(--border-radius-20);
+    border: solid 1px var(--white-8);
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .keycard__init-data {
-    display: block;
-    padding: .8em 0;
-    font-size: var(--text-medium);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
 }
 
 .keycard__app-info-label {
@@ -276,9 +287,9 @@
 }
 
 .keycard__init-info-label {
-    font-size: 1em;
-    color: var(--white-95);
-    display: inline-block;
+    color: var(--orange);
+    width: 40%;
+    text-align: left;
 }
 
 .keycard__wordlist-container {
@@ -470,6 +481,7 @@
     position: relative;
     cursor: pointer;
     margin-right: 2.5em;
+    font-size: var(--text-medium);
 }
 
 .keycard__check-label:before {
