@@ -1,12 +1,12 @@
 import { ipcRenderer } from "electron";
 import { UI } from "./ui";
 
-export namespace LockCard {
-    export function lock(): void {
-      const submitBtn = document.getElementById("lock-card-btn") as HTMLInputElement;
-      const cancelBtn = document.getElementById("lock-card-cancel") as HTMLInputElement;
+export namespace FactoryReset {
+    export function reset(): void {
+      const submitBtn = document.getElementById("reset-card-btn") as HTMLInputElement;
+      const cancelBtn = document.getElementById("reset-card-cancel") as HTMLInputElement;
       submitBtn.addEventListener("click", (e) => {
-        ipcRenderer.send("lock-card");
+        ipcRenderer.send("factory-reset");
         UI.unloadFragment();
         e.preventDefault();
       });

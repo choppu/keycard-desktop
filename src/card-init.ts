@@ -32,23 +32,17 @@ export namespace CardInit {
 
   export function renderInitInfo(initData: InitializationData): void {
     UI.loadFragment('initialization-success.html', () => {
+      const okBtn = document.getElementById("btn-card-init-success") as HTMLInputElement;
       const pin = document.getElementById("pin") as HTMLSpanElement;
-      const puk = document.getElementById("puk") as HTMLSpanElement;
-      const pairingPassword = document.getElementById("pairing-password") as HTMLSpanElement;
+      const duressPIN = document.getElementById("duress-pin") as HTMLSpanElement;
   
       pin.innerHTML = initData.pin;
-      puk.innerHTML = initData.puk;
-      pairingPassword.innerHTML = initData.pairingPassword;
+      duressPIN.innerHTML = initData.puk.substring(0,6);
   
-      document.getElementById("btn-card-init-success")?.addEventListener("click", function (e) {
+      okBtn.addEventListener("click", function (e) {
         UI.unloadFragment();
         e.preventDefault();
       });
     });
   }
-
-  ipcRenderer.on("card-initialization", (_, initData) => {
-    UI.addMessageToLog("Card initialized");
-    renderInitInfo(initData);
-  });
 }

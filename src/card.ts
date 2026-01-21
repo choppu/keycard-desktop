@@ -92,7 +92,6 @@ export class Card {
         this.sessionInfo.cashAddress = '0x' + Utils.hx(Ethereum.toEthereumAddress(data.pubKey));
       } catch (err: any) {
         this.sessionInfo.cashAddress = "Not installed";
-        this.window.send("card-exceptions", err.message);
       }
     } 
   }
@@ -353,6 +352,14 @@ export class Card {
     await this.refreshConnection();
   }
 
+  async factoryReset(): Promise<void> {
+    (await this.cmdSet!.factoryReset()).checkOK();
+    this.window.send('factory-reset-success');
+    this.resetConnection();
+    this.sessionInfo.cardConnected = true;
+    await this.refreshConnection();
+  }
+
   async lockCard(): Promise<void> {
       const gpCmdSet = new GlobalPlatformCommandset(this.channel!);
       
@@ -362,8 +369,14 @@ export class Card {
       const encKey = CryptoUtils.getRandomBytes(16);
       const macKey = CryptoUtils.getRandomBytes(16);
       const decKey = CryptoUtils.getRandomBytes(16);
+        
+      let resp = await gpCmdSet.putSCP02Keys(0, 1, encKey, macKey, decKey);
 
-      (await gpCmdSet.putSCP02Keys(0, 1, encKey, macKey, decKey)).checkOK();
+      if(resp.sw == 0x6a80) {
+        resp = await gpCmdSet.putSCP02Keys(1, 2, encKey, macKey, decKey);
+      }
+
+      resp.checkOK();
       
       let cmd = new APDUCommand(0x84, 0xf0, 0x80, 0x07, new Uint8Array(0));
       (await gpCmdSet.secureChannel.send(cmd)).checkSW([0x9000, 0x6985]);
@@ -438,7 +451,7 @@ export class Card {
       try {
         await fn.call(this, ...args);
       } catch (err: any) {
-        this.window.send("card-exceptions", `${err} ${err.message}`);
+        this.window.send("card-exceptions", err.message);
       }
     }
   }
@@ -458,6 +471,7 @@ export class Card {
     ipcMain.on("export-key", this.withErrorHandler(this.exportKey));
     ipcMain.on("remove-key", this.withErrorHandler(this.removeKey));
     ipcMain.on("install-applet", this.withErrorHandler(this.installApplet));
+    ipcMain.on("factory-reset", this.withErrorHandler(this.factoryReset));
     ipcMain.on("lock-card", this.withErrorHandler(this.lockCard));
   }
 }

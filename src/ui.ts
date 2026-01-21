@@ -57,13 +57,13 @@ export namespace UI {
     }
   }
 
-  export function renderCmdScreenLayout(btn: HTMLButtonElement, onLoad: () => void, pukFunc?: () => void) : void {
+  export function renderCmdScreenLayout(btn: HTMLButtonElement, onLoad: (arg?: string) => void, pukFunc?: (() => void) | null, isCWLayout?: boolean) : void {
     btn.addEventListener("click", (e) => {
       let layout = `${btn.dataset.layout}.html`;
       if(pukFunc) {
         cardInfo.pinRetry as number > 0 ? loadFragment(layout, onLoad) : loadFragment('verify-puk.html', pukFunc);
       } else {
-        loadFragment(layout, onLoad);
+        isCWLayout ? loadFragment(layout, () => onLoad(cardInfo.keyPath)) : loadFragment(layout, onLoad);
       }
       e.preventDefault();
     });

@@ -2,13 +2,14 @@ import { InitializationData } from "./initialization-data";
 import cryptoRandomString from 'crypto-random-string';
 
 export namespace Utils {
+  export const defaultPairingPassword = "KeycardDefaultPairing";  
   export function hx(arr: Uint8Array): string {
     return Buffer.from(arr).toString('hex');
   }
 
   export function createInitializationData(pin: string): InitializationData {
     let puk = cryptoRandomString({ length: 12, type: 'numeric' });;
-    let pairingPassword = cryptoRandomString({ length: 8, type: 'url-safe' });
+    let pairingPassword = defaultPairingPassword;
     return new InitializationData(pin, puk, pairingPassword);
   }
 

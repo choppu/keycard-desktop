@@ -7,7 +7,7 @@ export namespace Main {
   let card: Card;
 
   export function onWindowAllClosed() {
-    if (process.platform !== 'darwin') application.quit();
+    application.quit();
   }
 
   export function onClose(): void {
@@ -29,6 +29,7 @@ export namespace Main {
     mainWindow.webContents.once("dom-ready", () => {
       card.start();
     });
+    //mainWindow.webContents.openDevTools();
     mainWindow.on('closed', Main.onClose);
   }
 

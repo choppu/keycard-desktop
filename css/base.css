@@ -31,7 +31,7 @@
     --icon-rounded: 30px;
     --container-border-radius: 50px;
     --blur-effect: blur(40px);
-    --scrollbar-bg: rgb(77, 68, 60);
+    --scrollbar-bg: var(--white-40);
     --line-border: 10px;
     --bg-color: #010101;
     --white-4: #FFFFFF0A;
@@ -203,20 +203,6 @@ a {
 input[disabled="disabled"],
 input[disabled="disabled"]:hover {
     opacity: 0.7;
-}
-
-.group:before,
-.group:after {
-    content: " ";
-    display: table;
-}
-
-.group:after {
-    clear: both;
-}
-
-.group {
-    zoom: 1;
 }
 
 ::-webkit-scrollbar {

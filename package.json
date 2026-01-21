@@ -22,7 +22,6 @@
     ],
     "mac": {
       "category": "public.app-category.utilities",
-      "identity": null,
       "target": "zip"
     }
   },
@@ -30,10 +29,10 @@
   "license": "MIT",
   "dependencies": {
     "@nonth/pcsclite": "^0.6.2",
-    "bip39": "^3.1.0",
+    "@scure/bip39": "^2.0.1",
     "crypto-random-string": "^5.0.0",
     "electron-store": "^11.0.2",
-    "keycard-sdk": "github:choppu/keycard-sdk",
+    "keycard-sdk": "^3.1.2",
     "qrcode": "^1.5.4",
     "typescript": "^5.9.3"
   },

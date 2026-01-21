@@ -7,8 +7,10 @@ import { Key } from "./key";
 import { InstallApplet } from "./applet";
 import { LockCard } from "./lock";
 import { SessionInfo } from "./session-info";
+import { ipcRenderer } from "electron";
+import { Utils } from "./utils";
+import { FactoryReset } from "./factory-reset";
 
-const { ipcRenderer } = require('electron');
 const openSChannelBtn = document.getElementById("keycard-open-secure-channel") as HTMLButtonElement;
 const verifyPinBtn = document.getElementById("keycard-verify-pin") as HTMLButtonElement;
 const changePinBtn = document.getElementById("keycard-change-pin") as HTMLButtonElement;
@@ -22,6 +24,7 @@ const changeWalletBtn = document.getElementById("keycard-chage-wall") as HTMLBut
 const exportKeyBtn = document.getElementById("keycard-export-key") as HTMLButtonElement;
 const removeKeyBtn = document.getElementById("keycard-remove-key") as HTMLButtonElement;
 const reinstallAppletBtn = document.getElementById("keycard-reinstall-applet") as HTMLButtonElement;
+const factoryResetBtn = document.getElementById("keycard-factory-reset") as HTMLButtonElement;
 const lockCardBtn = document.getElementById("keycard-lock") as HTMLButtonElement;  
 
 let isDefaultPairingPassword= true;
@@ -54,11 +57,16 @@ ipcRenderer.on('card-need-initialization', (_: any) => {
   UI.loadFragment('initialization.html', CardInit.initializeCard);
 });
 
+ipcRenderer.on("card-initialization", (_, initData) => {
+  UI.addMessageToLog("Card initialized");
+  CardInit.renderInitInfo(initData);
+});
+
 ipcRenderer.on("pairing-needed", (_: any) => {
   UI.addMessageToLog("No pairing found");
   if (isDefaultPairingPassword) {
     isDefaultPairingPassword = false;
-    ipcRenderer.send("pairing-pass-submitted", "KeycardDefaultPairing");
+    ipcRenderer.send("pairing-pass-submitted", Utils.defaultPairingPassword);
   } else {
     UI.loadFragment('pairing.html', Pair.pair);
   }
@@ -108,6 +116,7 @@ ipcRenderer.on("enable-open-secure-channel", (_: any) => {
 
 ipcRenderer.on("enable-applet-cmds", (_: any) => {
   UI.enableCmdButton(reinstallAppletBtn);
+  UI.enableCmdButton(factoryResetBtn);
   UI.enableCmdButton(lockCardBtn);
 });
 
@@ -130,7 +139,8 @@ ipcRenderer.on("disable-cmds", (_: any) => {
   UI.disableCmdButton(reinstallAppletBtn);
   UI.disableCmdButton(changeWalletBtn);
   UI.disableCmdButton(exportKeyBtn);
-  UI.disableCmdButton(lockCardBtn)
+  UI.disableCmdButton(lockCardBtn);
+  UI.disableCmdButton(factoryResetBtn);
 });
 
 ipcRenderer.on('mnemonic-created', (_: any, wordList: string) => {
@@ -138,7 +148,7 @@ ipcRenderer.on('mnemonic-created', (_: any, wordList: string) => {
   UI.addMessageToLog("Mnemonic created");
 });
 
-ipcRenderer.on('wallet-changed', (_: any, wordList: string) => {
+ipcRenderer.on('wallet-changed', (_: any) => {
   UI.unloadFragment();
   UI.addMessageToLog("Wallet changed");
 });
@@ -172,8 +182,11 @@ ipcRenderer.on('applet-installed', (_: any) => {
 });
 
 ipcRenderer.on('card-locked', (_: any) => {
-  UI.unloadFragment();
   UI.addMessageToLog("Keycard locked");
+});
+
+ipcRenderer.on('factory-reset-success', (_: any) => {
+  UI.addMessageToLog("Factory reset completed successfully");
 });
 
 updateLogMessage('card-connected', "Selecting Keycard Wallet");
@@ -195,10 +208,11 @@ UI.renderCmdScreenLayout(unpairBtn, Pair.unpair);
 UI.renderCmdScreenLayout(unpairOthersBtn, Pair.unpairOtherClients);
 UI.renderCmdScreenLayout(createMnemonicBtn, Key.createMnemonic);
 UI.renderCmdScreenLayout(loadMnemonicBtn, Key.loadMnemonic);
-UI.renderCmdScreenLayout(changeWalletBtn, Key.changeWallet);
+UI.renderCmdScreenLayout(changeWalletBtn, Key.changeWallet, null, true);
 UI.renderCmdScreenLayout(exportKeyBtn, Key.exportKey);
 UI.renderCmdScreenLayout(removeKeyBtn, Key.removeKey);
 UI.renderCmdScreenLayout(reinstallAppletBtn, InstallApplet.install);
+UI.renderCmdScreenLayout(factoryResetBtn, FactoryReset.reset);
 UI.renderCmdScreenLayout(lockCardBtn, LockCard.lock);    
 
 document.getElementById("keycard-open-secure-channel")?.addEventListener("click", (e) => {

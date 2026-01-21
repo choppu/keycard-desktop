@@ -1,7 +1,8 @@
 import { ipcRenderer, shell } from "electron";
 import { UI } from "./ui";
 import { KeyPath } from "keycard-sdk/dist/key-path.js";
-import bip39 from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english.js';
 
 const QRCode = require('qrcode');
 const ethScanAddr = 'https://etherscan.io/address/';
@@ -32,7 +33,7 @@ export namespace Key {
 
     mnemonicPhraseField.addEventListener("input", (e) => {
       mnemonic = mnemonicPhraseField.value.trim();
-      bip39.validateMnemonic(mnemonic) ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
+      bip39.validateMnemonic(mnemonic, wordlist) ? submitBtn.removeAttribute("disabled") : submitBtn.setAttribute("disabled", "disabled");
       e.preventDefault();
     });
 
@@ -49,12 +50,14 @@ export namespace Key {
     });
   }
 
-  export function changeWallet(): void {
+  export function changeWallet(defaultKeyPath?: string): void {
     const walletPath = document.getElementById("change-wallet-path") as HTMLInputElement;
     const submitBtn = document.getElementById("change-wallet-path-btn") as HTMLInputElement;
     const cancelBtn = document.getElementById("change-wallet-path-cancel") as HTMLInputElement;
 
-    walletPath.addEventListener("input", (e) => {
+    walletPath.value = defaultKeyPath || "m/44'/60'/0'/0/0";
+
+    walletPath.addEventListener("change", (e) => {
       if (walletPath.value == "") {
         submitBtn.setAttribute("disabled", "disabled");
         return;
