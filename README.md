@@ -9,9 +9,18 @@ Keycard Desktop is an application to manage your Keycard. Here are some screensh
 
 ## Installing Keycard Desktop
 
-[Download the latest version](https://github.com/choppu/keycard-desktop/releases) of Keycard Desktop from the github release page. Please note, that the binaries are unsigned. Alternativelly, you can compile Keycard Desktop for your computer from the command line.
+[Download the latest version](https://github.com/choppu/keycard-desktop/releases) of Keycard Desktop from the github release page.
 
-`npm run dist`
+Alternativelly, you can compile Keycard Desktop for your computer from the command line.
+
+```
+git clone https://github.com/choppu/keycard-desktop.git
+npm install
+npm run dist
+```
+Install dependencies on Linux:
+
+`CXXFLAGS="-DNAPI_DISABLE_CPP_EXCEPTIONS" npm install`
 
 ## Functionality
 
