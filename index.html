@@ -11,79 +11,107 @@
 </head>
 
 <body class="keycard__body-container">
-  <div class="keycard__main-container group" id="main-container">
-    <div class="keycard__card-info-container group">
-      <div class="keycard__card-info">
-        <p class="keycard__card-info-container-message" id="app-info-header">No card connected</p>
-        <ul class="keycard__app-info-container">
-          <li class="keycard__card-info-container-element" id="cash-address"></li>
-          <li class="keycard__card-info-container-element" id="instance-uid"></li>
-          <li class="keycard__card-info-container-element" id="key-uid"></li>
-          <li class="keycard__card-info-container-element" id="app-version"></li>
-          <li class="keycard__card-info-container-element" id="pairing-slots"></li>
-          <li class="keycard__card-info-container-element" id="pin-retry"></li>
-          <li class="keycard__card-info-container-element" id="puk-retry"></li>
-          <li class="keycard__card-info-container-element" id="key-path"></li>
-        </ul>
-      </div>
-      <div class="keycard__card-messages" id="keycard-log-container"></div>
-    </div>
-    <div class="keycard__content-container group">
-      <div class="keycard__cmd-group-container group">
+  <div class="keycard__main-container" id="main-container">
+    <div class="keycard__content-container">
+      <div class="keycard__cmd-group-container">
         <p class="keycard__list-header">Authentication</p>
         <ul class="keycard__commands-list">
           <li class="keycard__commands-list-el"><button type="button" id="keycard-open-secure-channel"
               class="keycard__commands-list-el-link" disabled="disabled">Open Secure Channel</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-verify-pin"
-              class="keycard__commands-list-el-link" disabled="disabled">Verify PIN</button></li>
+              class="keycard__commands-list-el-link" data-layout="verify-pin" disabled="disabled">Verify PIN</button></li>
         </ul>
       </div>
-      <div class="keycard__cmd-group-container group">
+      <div class="keycard__cmd-group-container">
         <p class="keycard__list-header">Wallet</p>
         <ul class="keycard__commands-list">
           <li class="keycard__commands-list-el"><button type="button" id="keycard-create-mnemonic"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Create New
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="waiting" disabled="disabled">Create New
               Mnemonic</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-load-mnemonic"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Load Mnemonic</button>
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="load-mnemonic" disabled="disabled">Load Mnemonic</button>
           </li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-chage-wall"
-              class="keycard__commands-list-el-link" disabled="disabled">Change Wallet</button></li>
+              class="keycard__commands-list-el-link" data-layout="change-wallet" disabled="disabled">Change Wallet</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-export-key"
-              class="keycard__commands-list-el-link" disabled="disabled">Show Wallet Address</button></li>
+              class="keycard__commands-list-el-link" data-layout="waiting" disabled="disabled">Show Wallet Address</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-remove-key"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Remove Key</button></li>
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="remove-key" disabled="disabled">Remove Key</button></li>
         </ul>
       </div>
-      <div class="keycard__cmd-group-container group">
+      <div class="keycard__cmd-group-container">
         <p class="keycard__list-header">Change Credentials</p>
         <ul class="keycard__commands-list">
           <li class="keycard__commands-list-el"><button type="button" id="keycard-change-pin"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Change PIN</button></li>
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="change-pin" disabled="disabled">Change PIN</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-change-puk"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Change PUK</button></li>
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="change-puk" disabled="disabled">Change PUK</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-change-pairing-pass"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Change Pairing
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="change-pairing" disabled="disabled">Change Pairing
               Password</button></li>
         </ul>
       </div>
-      <div class="keycard__cmd-group-container group">
+      <div class="keycard__cmd-group-container">
         <p class="keycard__list-header">Pairing</p>
         <ul class="keycard__commands-list">
           <li class="keycard__commands-list-el"><button type="button" id="keycard-unpair"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Unpair</button></li>
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="unpair" disabled="disabled">Unpair</button></li>
           <li class="keycard__commands-list-el"><button type="button" id="keycard-unpair-oth"
-              class="keycard__commands-list-el-link keycard__cmd-disabled" disabled="disabled">Unpair Other
+              class="keycard__commands-list-el-link keycard__cmd-disabled" data-layout="unpair" disabled="disabled">Unpair Other
               Clients</button></li>
         </ul>
       </div>
-      <div class="keycard__cmd-group-container group">
+      <div class="keycard__cmd-group-container">
         <p class="keycard__list-header">Installation</p>
         <ul class="keycard__commands-list">
           <li class="keycard__commands-list-el"><button type="button" id="keycard-reinstall-applet"
-              class="keycard__commands-list-el-link" disabled="disabled">(Re)Install Applet</button></li>
+              class="keycard__commands-list-el-link" data-layout="reinstall" disabled="disabled">(Re)Install Applet</button></li>
+          <li class="keycard__commands-list-el"><button type="button" id="keycard-factory-reset"
+              class="keycard__commands-list-el-link" data-layout="factory-reset" disabled="disabled">Factory Reset</button></li>    
+          <li class="keycard__commands-list-el"><button type="button" id="keycard-lock"
+              class="keycard__commands-list-el-link" data-layout="lock-card" disabled="disabled">Lock Keycard</button></li>   
         </ul>
       </div>
+    </div>
+    <div class="keycard__card-info-container">
+      <div class="keycard__card-info">
+        <p class="keycard__card-info-container-message" id="app-info-header">No card connected</p>
+        <ul class="keycard__app-info-container keycard__hide-container" id="app-info-container">
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Cash Address</span>
+            <span id="cash-address"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Instance UID</span>
+            <span id="instance-uid"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Mnemonic UID</span> 
+            <span id="key-uid"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Application Version</span> 
+            <span id="app-version"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Free pairing slots</span> 
+            <span id="pairing-slots"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">PIN retry count</span>
+            <span id="pin-retry"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">PUK retry count</span>
+            <span id="puk-retry"></span>
+          </li>
+          <li class="keycard__card-info-container-element">
+            <span class="keycard__app-info-label">Wallet Path</span>
+            <span id="key-path"></span>
+          </li>
+        </ul>
+      </div>
+      <div class="keycard__card-messages" id="keycard-log-container"></div>
     </div>
   </div>
   <div class="keycard__card-info-container-hidden" id="cmd-layout-container"></div>
@@ -91,5 +119,4 @@
 <script>
   require('./out/renderer.js');
 </script>
-
 </html>

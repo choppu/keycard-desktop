@@ -1,6 +1,6 @@
-import { ApplicationInfo } from "keycard-sdk/dist/application-info";
+import { ApplicationInfo } from "keycard-sdk/dist/application-info.js";
 import { Utils } from "./utils";
-import { ApplicationStatus } from "keycard-sdk/dist/application-status";
+import { ApplicationStatus } from "keycard-sdk/dist/application-status.js";
 
 export class  SessionInfo {
   cashAddress!: string;
@@ -21,10 +21,10 @@ export class  SessionInfo {
   }
 
   setApplicationInfo(appInfo: ApplicationInfo) {
-    this.instanceUID = Utils.hx(appInfo.instanceUID);
+    this.instanceUID = Utils.hx(appInfo.instanceUID!);
     this.appVersion = appInfo.getAppVersionString();
-    this.pairingSlots = appInfo.freePairingSlots.toString();
-    this.keyUID = Utils.hx(appInfo.keyUID);
+    this.pairingSlots = appInfo.freePairingSlots!.toString();
+    this.keyUID = Utils.hx(appInfo.keyUID!);
     this.hasMasterKey = appInfo.hasMasterKey();
   }
 

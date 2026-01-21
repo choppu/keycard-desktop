@@ -1,11 +1,13 @@
-<section id="keycard__export-address-layout">
-  <p class="keycard__export-address-message">Current Wallet Address</p>
+<section class="keycard__section" id="keycard__export-address-layout">
+  <p class="keycard__export-address-message">Wallet Address</p>
   <div class="keycard__export-address-container">
     <canvas id="eth-addr-canvas" class="eth__address-qr"></canvas>
   </div>
   <div class="keycard__key-container">
-    <span id="wallet-eth-address" class="keycard__export-address"></span>
-    <a href="#" id="wallet-key-link" class="keycard__export-address-link">&#x1f517</a>
+    <a href="#" id="wallet-key-link" class="keycard__export-address-link">
+        <span id="wallet-eth-address" class="keycard__export-address"></span>
+        <img src="./img/external.svg" alt="Link" class="keycard__export-img">
+    </a>
   </div>
   <p class="keycard__wallet-public-key-label">Full Public Key</p>
   <p id="wallet-public-key" class="keycard__wallet-public-key"></p>

@@ -11,13 +11,16 @@ export namespace Main {
   }
 
   export function onClose(): void {
+    card.disconnect();
     mainWindow.destroy();
   }
 
   export function onReady(): void {
     mainWindow = new BrowserWindow({
-      width: 1100, height: 850, minWidth: 1000, minHeight: 845, maximizable: true, webPreferences: {
-        nodeIntegration: true
+      width: 1100, height: 850, minWidth: 1100, minHeight: 850, maxWidth: 1100, maxHeight: 850, maximizable: false, resizable: false, webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        enableRemoteModule: true,
       }
     });
     mainWindow.removeMenu();
@@ -26,6 +29,7 @@ export namespace Main {
     mainWindow.webContents.once("dom-ready", () => {
       card.start();
     });
+    //mainWindow.webContents.openDevTools();
     mainWindow.on('closed', Main.onClose);
   }
 

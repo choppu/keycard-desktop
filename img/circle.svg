@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 24 24"
+   fill="#ffffff"
+   stroke="#ffffff"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="circle.svg"
+   inkscape:version="1.4-beta3 (01c8a1ca, 2024-08-28)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.0325"
+     inkscape:cx="400"
+     inkscape:cy="400"
+     inkscape:window-width="1472"
+     inkscape:window-height="661"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg1" />
+  <g
+     id="SVGRepo_bgCarrier"
+     stroke-width="0" />
+  <g
+     id="SVGRepo_tracerCarrier"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <g
+     id="SVGRepo_iconCarrier"
+     transform="matrix(0.7062937,0,0,0.7062937,3.5244756,3.5244756)">
+    <title
+       id="title1" />
+    <g
+       id="Complete">
+      <g
+         id="Circle">
+        <circle
+           cx="12"
+           cy="12"
+           data-name="Circle"
+           fill="none"
+           id="Circle-2"
+           r="10"
+           stroke="#ffffff"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           stroke-width="2" />
+      </g>
+    </g>
+  </g>
+</svg>

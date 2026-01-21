@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300,0..1,-50..200');
+
+:root {
+    --font-main: 'Cutive Mono Mono', monospace;
+    --font-secondary: 'Inter', monospace;
+    --icons-font: 'Material Symbols Outlined', monospace;
+    --icon-normal: 1em;
+    --text-default-line-heigth: 1.4em;
+    --text-line-height-30: 1.8em;
+    --text-line-heigth-20: 1.25em;
+    --text-line-heigth-16: 1em;
+    --text-line-heigth-14: 0.85em;
+    --text-default-size: 1em;
+    --h1-size: 1.75em;
+    --h2-size: 1.25em;
+    --h3-size: 0.95em;
+    --heading-text-small: 0.9em;
+    --text-small-mobile: 0.7em;
+    --text-small: 0.75em;
+    --text-medium: 0.85em;
+    --text-weight-200: 200;
+    --text-default-weight: 300;
+    --text-semibold: 500;
+    --text-bold: 600;
+    --shadow-color: rgba(100, 100, 111, 0.2);
+    --box-shadow: var(--shadow-color) 0px 7px 29px 0px;
+    --icon-default-width: 30px;
+    --icon-default-height: 30px;
+    --icon-rounded: 30px;
+    --container-border-radius: 50px;
+    --blur-effect: blur(40px);
+    --scrollbar-bg: var(--white-40);
+    --line-border: 10px;
+    --bg-color: #010101;
+    --white-4: #FFFFFF0A;
+    --white-8: #FFFFFF14;
+    --white-12: #FFFFFF1F;
+    --white-20: #FFFFFF33;
+    --white-40: #FFFFFF66;
+    --white-60: #FFFFFF99;
+    --white-80: #FFFFFFCC;
+    --white-95: #FFFFFFF2;
+    --terminal-green: #1bbc68;
+    --orange: #FF7D46;
+    --orange-dark: #E95460;
+    --border-radius-12: 12px;
+    --border-radius-20: 20px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: normal;
+}
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    font-size: 62.5%;
+    font-size: var(--text-default-size);
+    color: var(--white-95);
+    line-height: var(--text-default-line-heigth);
+    font-family: var(--font-main);
+    font-weight: var(--text-default-weight);
+    background: var(--bg-color);
+    overflow-y: hidden;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+a {
+    font: inherit;
+    color: inherit;
+    text-decoration: none;
+}
+
+input[disabled="disabled"],
+input[disabled="disabled"]:hover {
+    opacity: 0.7;
+}
+
+::-webkit-scrollbar {
+    background-color: var(--bg-color);
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-bg);
+    border-radius: var(--line-border);
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
